@@ -1,5 +1,10 @@
 lex/yacc grammar from http://www.quut.com/c/ANSI-C-grammar-l.html
 
+to run file download flex-bison from https://sourceforge.net/projects/winflexbison/
+
+win_flex -d filename allows to debug flex text matching but -d is optional
+win_bison -d filename is necessary to generate cp.tab.h file.
+
 stack functions exist
 
 globals-
