@@ -1,13 +1,13 @@
 typedef struct node {
 	char *tok;
-	int type;
+	char *type;
 	struct node *next;
 	struct node *prev;
 } node;
 
 typedef struct infonode {
+	char *tok;
 	int loc;
-	int type;
 	struct infonode *next;
 } infonode;
 

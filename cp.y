@@ -9,13 +9,14 @@ void nextline(void);
 void move(int n);
 
 int currlex = 0;
-void push(int loc);
+void push(char *tok);
+void pop(char *type);
 
 enum {F = 1, ST, E, ST_ID};
 
 %}
 
-%token	IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
+%token	IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF TRUEVAL FALSEVAL
 %token	PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token	AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token	SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
@@ -36,7 +37,7 @@ enum {F = 1, ST, E, ST_ID};
 %%
 
 primary_expression
-	: IDENTIFIER			{move(1); push(currlex);}
+	: IDENTIFIER			{move(1);}
 	| constant				
 	| string				
 	| '(' expression ')'	{move(2);}
@@ -47,10 +48,12 @@ constant
 	: I_CONSTANT		/* includes character_constant */	{move(1);}
 	| F_CONSTANT											{move(1);}
 	| ENUMERATION_CONSTANT	/* after it has been defined as such */ {move(1);}
+	| TRUEVAL
+	| FALSEVAL			
 	;
 
 enumeration_constant		/* before it has been defined as such */
-	: IDENTIFIER			{move(1); push(currlex);}
+	: IDENTIFIER			{move(1); pop("enum declaration");}
 	;
 
 string
@@ -77,8 +80,8 @@ postfix_expression
 	| postfix_expression '[' expression ']'					{move(2);}
 	| postfix_expression '(' ')'							{move(2);}
 	| postfix_expression '(' argument_expression_list ')'	{move(2);}
-	| postfix_expression '.' IDENTIFIER						{move(2); push(currlex);}
-	| postfix_expression PTR_OP IDENTIFIER					{move(2); push(currlex);}
+	| postfix_expression '.' IDENTIFIER						{move(2); pop("struct part");}
+	| postfix_expression PTR_OP IDENTIFIER					{move(2); pop("struct part");}
 	| postfix_expression INC_OP								{move(1);}
 	| postfix_expression DEC_OP								{move(1);}
 	| '(' type_name ')' '{' initializer_list '}'			{move(4);}
@@ -91,7 +94,7 @@ argument_expression_list
 	;
 
 unary_expression
-	: postfix_expression	{printf("postfix expr %d\n", currlex);}
+	: postfix_expression	
 	| INC_OP unary_expression		{move(1);}
 	| DEC_OP unary_expression		{move(1);}
 	| unary_operator cast_expression
@@ -168,7 +171,7 @@ logical_and_expression
 	;
 
 logical_or_expression
-	: logical_and_expression  {printf("logical-and expr\n");}
+	: logical_and_expression  
 	| logical_or_expression OR_OP logical_and_expression	{move(1);}
 	;
 
@@ -197,7 +200,7 @@ assignment_operator
 	;
 
 expression
-	: assignment_expression {printf("assign expr\n");}
+	: assignment_expression 
 	| expression ',' assignment_expression		{move(1);}
 	;
 
@@ -264,8 +267,8 @@ type_specifier
 
 struct_or_union_specifier
 	: struct_or_union '{' struct_declaration_list '}'					{move(2);}
-	| struct_or_union IDENTIFIER '{' struct_declaration_list '}'		{move(3); push(currlex-2);}
-	| struct_or_union IDENTIFIER										{move(1); push(currlex);}				
+	| struct_or_union IDENTIFIER '{' struct_declaration_list '}'		{move(3); pop("struct type");}
+	| struct_or_union IDENTIFIER										{move(1); pop("struct type");}				
 	;
 
 struct_or_union
@@ -305,9 +308,9 @@ struct_declarator
 enum_specifier
 	: ENUM '{' enumerator_list '}'					{move(3);}
 	| ENUM '{' enumerator_list ',' '}'				{move(4);}
-	| ENUM IDENTIFIER '{' enumerator_list '}'		{move(4); push(currlex-2);}
-	| ENUM IDENTIFIER '{' enumerator_list ',' '}'	{move(5); push(currlex-3);}
-	| ENUM IDENTIFIER								{move(2); push(currlex);}
+	| ENUM IDENTIFIER '{' enumerator_list '}'		{move(4); pop("enum type");}
+	| ENUM IDENTIFIER '{' enumerator_list ',' '}'	{move(5); pop("enum type");}
+	| ENUM IDENTIFIER								{move(2); pop("enum type");}
 	;
 
 enumerator_list
@@ -343,11 +346,11 @@ alignment_specifier
 
 declarator
 	: pointer direct_declarator		
-	| direct_declarator				{printf("$%d$\n",currlex);}
+	| direct_declarator				
 	;
 
 direct_declarator
-	: IDENTIFIER												{move(1); push(currlex);}
+	: IDENTIFIER												{move(1); pop("simple var");}
 	| '(' declarator ')'										{move(2);}
 	| direct_declarator '[' ']'									{move(2);}
 	| direct_declarator '[' '*' ']'								{move(3);}
@@ -393,8 +396,8 @@ parameter_declaration
 	;
 
 identifier_list
-	: IDENTIFIER									{move(1); push(currlex);}
-	| identifier_list ',' IDENTIFIER				{move(2); push(currlex);}
+	: IDENTIFIER									{move(1); ;;}
+	| identifier_list ',' IDENTIFIER				{move(2); ;;}
 	;
 
 type_name
@@ -456,7 +459,7 @@ designator_list
 
 designator
 	: '[' constant_expression ']'		{move(2);}
-	| '.' IDENTIFIER					{move(2); push(currlex);}
+	| '.' IDENTIFIER					{move(2);  pop("designator");}
 	;
 
 static_assert_declaration
@@ -466,21 +469,21 @@ static_assert_declaration
 statement
 	: labeled_statement			
 	| compound_statement		
-	| expression_statement		{printf("expr stmt\n");}
+	| expression_statement		
 	| selection_statement		
 	| iteration_statement		
 	| jump_statement			
 	;
 
 labeled_statement
-	: IDENTIFIER ':' statement						{move(2); push(currlex-1);}
+	: IDENTIFIER ':' statement						{move(2);  pop("label");}
 	| CASE constant_expression ':' statement		{move(2);}
 	| DEFAULT ':' statement							{move(2);}
 	;
 
 compound_statement
 	: '{' '}'								{move(2);}
-	| '{'  block_item_list '}'				{move(2); printf("comp\n");}
+	| '{'  block_item_list '}'				{move(2);}
 	;
 
 block_item_list
@@ -490,7 +493,7 @@ block_item_list
 
 block_item
 	: declaration					
-	| statement	{printf("stmt\n");}					
+	| statement				
 	;
 
 expression_statement
@@ -514,7 +517,7 @@ iteration_statement
 	;
 
 jump_statement
-	: GOTO IDENTIFIER ';'		{move(3); push(currlex-1);}
+	: GOTO IDENTIFIER ';'		{move(3); pop("goto label");}
 	| CONTINUE ';'				{move(2);}
 	| BREAK ';'					{move(2);}
 	| RETURN ';'				{move(2);}
@@ -549,39 +552,107 @@ node *first = NULL;
 node *last = NULL;
 node *prev = NULL;
 
-int ln, ctline = 0, currline = 0;
+int ln, currloc = 0, currline = 0;
 int stackct = 0;
 
 line *linearr; 
 infonode *infoarr[109];
-infonode *top = NULL;
+infonode *top = NULL, *pre = NULL, *post = NULL, *upper = NULL;
 
 void dispstk(void);
+void disprecord(void);
 
-void push(int loc)
+node *nav(int loc)
+{
+	int line = loc/100, offset = (loc - line*100);
+	node *going = (*(linearr+line)).start;
+	printf("in nav %d\n",loc);
+	for (int i = 0; i<offset; i++)
+	{
+		going = going->next;
+		printf("%d\n",i);
+	}
+	return going;
+}
+
+void push(char *tok)
 {
 	if (top == NULL)
     {
         top =(infonode *)malloc(sizeof(infonode));
+        top->tok = malloc(strlen(tok)+1);
+		top->loc = currloc;
+		strcpy(top->tok,tok);
         top->next = NULL;
-		top->type = 0;
-        top->loc = loc;
     }
     else
     {
         infonode *temp = (infonode *)malloc(sizeof(infonode));
         temp->next = top;
-        temp->loc = loc;
-		temp->type = 0;
+		temp->tok = malloc(strlen(tok)+1);
+		strcpy(temp->tok,tok);
+		temp->loc = currloc;
         top = temp;
     }
-    stackct++;
+	printf("in push\n");
 	dispstk();
+	post = upper;
+	upper = NULL;
+	pre = NULL;
 }
 
-void pop(int type)
+void record(infonode *inf, char *type)
 {
-    infonode *top1 = top;
+	free(inf->tok);
+	inf->tok = malloc(strlen(type)+1);
+	strcpy(inf->tok, type);
+	if (upper == NULL)
+	{
+		upper = inf;
+	}
+	if (pre!=NULL)
+	{
+		pre->next = inf;
+		pre = pre->next;
+	}
+	else
+		pre = inf;
+	printf("pretok: %s\n",pre->tok);
+	pre->next = post;
+}
+
+void disprecord(void)
+{
+	printf("\ndisprecord\n");
+	infonode *iter;
+	if (upper == NULL)
+	{
+		iter = post;
+	}
+	else 
+		iter = upper;
+		printf("iter is upper\n");
+	while (iter!=NULL)
+	{
+		printf("yay\n");
+		printf("loc: %d, type: %s\n", iter->loc, iter->tok);
+		printf("printed\n");
+		iter = iter->next;
+	}
+}
+
+void addinfo(infonode *inf, char *type)
+{
+	node *temp = nav(inf->loc);
+	free(temp->type);
+	temp->type = malloc(strlen(type)+1);
+	strcpy(temp->type,type);
+}
+
+void pop(char *type)
+{
+    printf("popping: %s\n",type);
+	infonode *top1 = top;
  
     if (top1 == NULL)
     {
@@ -590,8 +661,9 @@ void pop(int type)
     }
     else
         top1 = top1->next;
-	//if (type)
-		//addinfo(top, type);
+	if (type)
+		record(top, type);
+		disprecord();
     free(top);
     top = top1;
     stackct--;
@@ -609,7 +681,7 @@ void dispstk(void)
  
     while (top1 != NULL)
     {
-        printf("loc: %d\n", top1->loc);
+        printf("tok: %s, loc: %d\n", top1->tok, top1->loc);
         top1 = top1->next;
     }
 }
@@ -627,22 +699,23 @@ void move(int n)
 void nextline(void)
 {
 	(*(linearr+currline)).start = first;
-	(*(linearr+currline)).n = ctline;
+	(*(linearr+currline)).n = currline;
 	first = NULL;
 	last = NULL;
 	prev = NULL;
-	ctline = 0;
 	currline += 1;
+	currloc = ((currloc/100)+1)*100;
 }
 
-void Node(char *tok)
+void Node(char *tok, char type[])
 {
-	ctline++;
+	currloc++;
 	node *currnode = (node *) malloc(sizeof(node));
-	currnode->type = 0;
 	currnode->next = NULL;
 	currnode->tok = malloc(strlen(tok)+1);
+	currnode->type = malloc(strlen(type)+1);
 	strcpy(currnode->tok, tok);
+	strcpy(currnode->type, type);
 	if (prev)
 		currnode->prev = prev;
 	else
@@ -688,14 +761,21 @@ int main(int argc, char *argv[])
 		yyparse();
 	}
 	
+	// node *gt = nav(204);
+	// printf("hey %s\n",gt->tok);
+
 	printf("currlex: %d\n",currlex);
 	
 	if (first != NULL)
 		nextline();
 	
 	printf("$$$$$$$$$$$\n");
-	disp(linearr, ln);
+	//disp(linearr, ln);
 	printf("$$$$$$$$$$$\n");
+	
+	printf("\n");
+	dispstk();
+	disprecord();
 	
 	fclose(yyin);
 }
@@ -705,13 +785,13 @@ void disp(line *linearr, int ln)
 	int i;
 	for (i = 0; i<ln; i++)
 	{
-		printf("%3d. %d tokens: ",i,(*(linearr+i)).n);
+		printf("%3d. %d tokens: \n",i,(*(linearr+i)).n);
 		node *read = (*(linearr+i)).start;
 		for (; read; read = read->next)
 		{
-			printf("%s ",read->tok);
+			printf("%s - %s\n",read->tok, read->type);
 		}
-		printf("\n");
+		printf("\n\n");
 	}
 }
 
