@@ -75,14 +75,16 @@ void nextline(void);
 void move(int n);
 
 int currlex = 0;
-void push(char *tok);
-void pop(char *type);
+void push(infonode **top, infonode *inf, char *tok);
+void pop(infonode **top, char *type);
+
+infonode *init = NULL, *rec = NULL;
 
 enum {F = 1, ST, E, ST_ID};
 
 
 /* Line 371 of yacc.c  */
-#line 86 "cp.tab.c"
+#line 88 "cp.tab.c"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -225,7 +227,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 229 "cp.tab.c"
+#line 231 "cp.tab.c"
 
 #ifdef short
 # undef short
@@ -638,34 +640,34 @@ static const yytype_int16 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    40,    40,    41,    42,    43,    44,    48,    49,    50,
-      51,    52,    56,    60,    61,    65,    69,    70,    74,    75,
-      79,    80,    81,    82,    83,    84,    85,    86,    87,    88,
-      92,    93,    97,    98,    99,   100,   101,   102,   103,   107,
-     108,   109,   110,   111,   112,   116,   117,   121,   122,   123,
-     124,   128,   129,   130,   134,   135,   136,   140,   141,   142,
-     143,   144,   148,   149,   150,   154,   155,   159,   160,   164,
-     165,   169,   170,   174,   175,   179,   180,   184,   185,   189,
-     190,   191,   192,   193,   194,   195,   196,   197,   198,   199,
-     203,   204,   208,   212,   213,   214,   218,   219,   220,   221,
-     222,   223,   224,   225,   226,   227,   231,   232,   236,   237,
-     241,   242,   243,   244,   245,   246,   250,   251,   252,   253,
-     254,   255,   256,   257,   258,   259,   260,   261,   262,   263,
-     264,   265,   269,   270,   271,   275,   276,   280,   281,   285,
-     286,   287,   291,   292,   293,   294,   298,   299,   303,   304,
-     305,   309,   310,   311,   312,   313,   317,   318,   322,   323,
-     327,   331,   332,   333,   334,   338,   339,   343,   344,   348,
-     349,   353,   354,   355,   356,   357,   358,   359,   360,   361,
-     362,   363,   364,   365,   366,   370,   371,   372,   373,   377,
-     378,   383,   384,   388,   389,   393,   394,   395,   399,   400,
-     404,   405,   409,   410,   411,   415,   416,   417,   418,   419,
-     420,   421,   422,   423,   424,   425,   426,   427,   428,   429,
-     430,   431,   432,   433,   434,   435,   439,   440,   441,   445,
-     446,   447,   448,   452,   456,   457,   461,   462,   466,   470,
-     471,   472,   473,   474,   475,   479,   480,   481,   485,   486,
-     490,   491,   495,   496,   500,   501,   505,   506,   507,   511,
-     512,   513,   514,   515,   516,   520,   521,   522,   523,   524,
-     528,   529,   533,   534,   538,   539,   543,   544
+       0,    42,    42,    43,    44,    45,    46,    50,    51,    52,
+      53,    54,    58,    62,    63,    67,    71,    72,    76,    77,
+      81,    82,    83,    84,    85,    86,    87,    88,    89,    90,
+      94,    95,    99,   100,   101,   102,   103,   104,   105,   109,
+     110,   111,   112,   113,   114,   118,   119,   123,   124,   125,
+     126,   130,   131,   132,   136,   137,   138,   142,   143,   144,
+     145,   146,   150,   151,   152,   156,   157,   161,   162,   166,
+     167,   171,   172,   176,   177,   181,   182,   186,   187,   191,
+     192,   193,   194,   195,   196,   197,   198,   199,   200,   201,
+     205,   206,   210,   214,   215,   216,   220,   221,   222,   223,
+     224,   225,   226,   227,   228,   229,   233,   234,   238,   239,
+     243,   244,   245,   246,   247,   248,   252,   253,   254,   255,
+     256,   257,   258,   259,   260,   261,   262,   263,   264,   265,
+     266,   267,   271,   272,   273,   277,   278,   282,   283,   287,
+     288,   289,   293,   294,   295,   296,   300,   301,   305,   306,
+     307,   311,   312,   313,   314,   315,   319,   320,   324,   325,
+     329,   333,   334,   335,   336,   340,   341,   345,   346,   350,
+     351,   355,   356,   357,   358,   359,   360,   361,   362,   363,
+     364,   365,   366,   367,   368,   372,   373,   374,   375,   379,
+     380,   385,   386,   390,   391,   395,   396,   397,   401,   402,
+     406,   407,   411,   412,   413,   417,   418,   419,   420,   421,
+     422,   423,   424,   425,   426,   427,   428,   429,   430,   431,
+     432,   433,   434,   435,   436,   437,   441,   442,   443,   447,
+     448,   449,   450,   454,   458,   459,   463,   464,   468,   472,
+     473,   474,   475,   476,   477,   481,   482,   483,   487,   488,
+     492,   493,   497,   498,   502,   503,   507,   508,   509,   513,
+     514,   515,   516,   517,   518,   522,   523,   524,   525,   526,
+     530,   531,   535,   536,   540,   541,   545,   546
 };
 #endif
 
@@ -2313,1123 +2315,1123 @@ yyreduce:
     {
         case 2:
 /* Line 1792 of yacc.c  */
-#line 40 "cp.y"
-    {move(1);}
+#line 42 "cp.y"
+    {move(1);pop(&init, "expression var");}
     break;
 
   case 5:
 /* Line 1792 of yacc.c  */
-#line 43 "cp.y"
+#line 45 "cp.y"
     {move(2);}
     break;
 
   case 7:
 /* Line 1792 of yacc.c  */
-#line 48 "cp.y"
+#line 50 "cp.y"
     {move(1);}
     break;
 
   case 8:
 /* Line 1792 of yacc.c  */
-#line 49 "cp.y"
+#line 51 "cp.y"
     {move(1);}
     break;
 
   case 9:
 /* Line 1792 of yacc.c  */
-#line 50 "cp.y"
+#line 52 "cp.y"
     {move(1);}
     break;
 
   case 12:
 /* Line 1792 of yacc.c  */
-#line 56 "cp.y"
-    {move(1); pop("enum declaration");}
+#line 58 "cp.y"
+    {move(1); pop(&init, "enum declaration");}
     break;
 
   case 13:
 /* Line 1792 of yacc.c  */
-#line 60 "cp.y"
+#line 62 "cp.y"
     {move(1);}
     break;
 
   case 14:
 /* Line 1792 of yacc.c  */
-#line 61 "cp.y"
+#line 63 "cp.y"
     {move(1);}
     break;
 
   case 15:
 /* Line 1792 of yacc.c  */
-#line 65 "cp.y"
+#line 67 "cp.y"
     {move(4);}
     break;
 
   case 17:
 /* Line 1792 of yacc.c  */
-#line 70 "cp.y"
+#line 72 "cp.y"
     {move(1);}
     break;
 
   case 18:
 /* Line 1792 of yacc.c  */
-#line 74 "cp.y"
+#line 76 "cp.y"
     {move(1);}
     break;
 
   case 19:
 /* Line 1792 of yacc.c  */
-#line 75 "cp.y"
+#line 77 "cp.y"
     {move(2);}
     break;
 
   case 21:
 /* Line 1792 of yacc.c  */
-#line 80 "cp.y"
+#line 82 "cp.y"
     {move(2);}
     break;
 
   case 22:
 /* Line 1792 of yacc.c  */
-#line 81 "cp.y"
+#line 83 "cp.y"
     {move(2);}
     break;
 
   case 23:
 /* Line 1792 of yacc.c  */
-#line 82 "cp.y"
+#line 84 "cp.y"
     {move(2);}
     break;
 
   case 24:
 /* Line 1792 of yacc.c  */
-#line 83 "cp.y"
-    {move(2); pop("struct part");}
+#line 85 "cp.y"
+    {move(2); pop(&init, "struct part");}
     break;
 
   case 25:
 /* Line 1792 of yacc.c  */
-#line 84 "cp.y"
-    {move(2); pop("struct part");}
+#line 86 "cp.y"
+    {move(2); pop(&init, "struct part");}
     break;
 
   case 26:
 /* Line 1792 of yacc.c  */
-#line 85 "cp.y"
+#line 87 "cp.y"
     {move(1);}
     break;
 
   case 27:
 /* Line 1792 of yacc.c  */
-#line 86 "cp.y"
+#line 88 "cp.y"
     {move(1);}
     break;
 
   case 28:
 /* Line 1792 of yacc.c  */
-#line 87 "cp.y"
+#line 89 "cp.y"
     {move(4);}
     break;
 
   case 29:
 /* Line 1792 of yacc.c  */
-#line 88 "cp.y"
+#line 90 "cp.y"
     {move(5);}
     break;
 
   case 31:
 /* Line 1792 of yacc.c  */
-#line 93 "cp.y"
+#line 95 "cp.y"
     {move(1);}
     break;
 
   case 33:
 /* Line 1792 of yacc.c  */
-#line 98 "cp.y"
+#line 100 "cp.y"
     {move(1);}
     break;
 
   case 34:
 /* Line 1792 of yacc.c  */
-#line 99 "cp.y"
+#line 101 "cp.y"
     {move(1);}
     break;
 
   case 36:
 /* Line 1792 of yacc.c  */
-#line 101 "cp.y"
+#line 103 "cp.y"
     {move(1);}
     break;
 
   case 37:
 /* Line 1792 of yacc.c  */
-#line 102 "cp.y"
+#line 104 "cp.y"
     {move(3);}
     break;
 
   case 38:
 /* Line 1792 of yacc.c  */
-#line 103 "cp.y"
+#line 105 "cp.y"
     {move(3);}
     break;
 
   case 39:
 /* Line 1792 of yacc.c  */
-#line 107 "cp.y"
+#line 109 "cp.y"
     {move(1);}
     break;
 
   case 40:
 /* Line 1792 of yacc.c  */
-#line 108 "cp.y"
+#line 110 "cp.y"
     {move(1);}
     break;
 
   case 41:
 /* Line 1792 of yacc.c  */
-#line 109 "cp.y"
+#line 111 "cp.y"
     {move(1);}
     break;
 
   case 42:
 /* Line 1792 of yacc.c  */
-#line 110 "cp.y"
+#line 112 "cp.y"
     {move(1);}
     break;
 
   case 43:
 /* Line 1792 of yacc.c  */
-#line 111 "cp.y"
+#line 113 "cp.y"
     {move(1);}
     break;
 
   case 44:
 /* Line 1792 of yacc.c  */
-#line 112 "cp.y"
+#line 114 "cp.y"
     {move(1);}
     break;
 
   case 46:
 /* Line 1792 of yacc.c  */
-#line 117 "cp.y"
+#line 119 "cp.y"
     {move(2);}
     break;
 
   case 48:
 /* Line 1792 of yacc.c  */
-#line 122 "cp.y"
+#line 124 "cp.y"
     {move(1);}
     break;
 
   case 49:
 /* Line 1792 of yacc.c  */
-#line 123 "cp.y"
+#line 125 "cp.y"
     {move(1);}
     break;
 
   case 50:
 /* Line 1792 of yacc.c  */
-#line 124 "cp.y"
+#line 126 "cp.y"
     {move(1);}
     break;
 
   case 52:
 /* Line 1792 of yacc.c  */
-#line 129 "cp.y"
+#line 131 "cp.y"
     {move(1);}
     break;
 
   case 53:
 /* Line 1792 of yacc.c  */
-#line 130 "cp.y"
+#line 132 "cp.y"
     {move(1);}
     break;
 
   case 55:
 /* Line 1792 of yacc.c  */
-#line 135 "cp.y"
+#line 137 "cp.y"
     {move(1);}
     break;
 
   case 56:
 /* Line 1792 of yacc.c  */
-#line 136 "cp.y"
+#line 138 "cp.y"
     {move(1);}
     break;
 
   case 58:
 /* Line 1792 of yacc.c  */
-#line 141 "cp.y"
+#line 143 "cp.y"
     {move(1);}
     break;
 
   case 59:
 /* Line 1792 of yacc.c  */
-#line 142 "cp.y"
+#line 144 "cp.y"
     {move(1);}
     break;
 
   case 60:
 /* Line 1792 of yacc.c  */
-#line 143 "cp.y"
+#line 145 "cp.y"
     {move(1);}
     break;
 
   case 61:
 /* Line 1792 of yacc.c  */
-#line 144 "cp.y"
+#line 146 "cp.y"
     {move(1);}
     break;
 
   case 63:
 /* Line 1792 of yacc.c  */
-#line 149 "cp.y"
+#line 151 "cp.y"
     {move(1);}
     break;
 
   case 64:
 /* Line 1792 of yacc.c  */
-#line 150 "cp.y"
+#line 152 "cp.y"
     {move(1);}
     break;
 
   case 66:
 /* Line 1792 of yacc.c  */
-#line 155 "cp.y"
+#line 157 "cp.y"
     {move(1);}
     break;
 
   case 68:
 /* Line 1792 of yacc.c  */
-#line 160 "cp.y"
+#line 162 "cp.y"
     {move(1);}
     break;
 
   case 70:
 /* Line 1792 of yacc.c  */
-#line 165 "cp.y"
+#line 167 "cp.y"
     {move(1);}
     break;
 
   case 72:
 /* Line 1792 of yacc.c  */
-#line 170 "cp.y"
+#line 172 "cp.y"
     {move(1);}
     break;
 
   case 74:
 /* Line 1792 of yacc.c  */
-#line 175 "cp.y"
+#line 177 "cp.y"
     {move(1);}
     break;
 
   case 76:
 /* Line 1792 of yacc.c  */
-#line 180 "cp.y"
+#line 182 "cp.y"
     {move(2);}
     break;
 
   case 79:
 /* Line 1792 of yacc.c  */
-#line 189 "cp.y"
+#line 191 "cp.y"
     {move(1);}
     break;
 
   case 80:
 /* Line 1792 of yacc.c  */
-#line 190 "cp.y"
+#line 192 "cp.y"
     {move(1);}
     break;
 
   case 81:
 /* Line 1792 of yacc.c  */
-#line 191 "cp.y"
+#line 193 "cp.y"
     {move(1);}
     break;
 
   case 82:
 /* Line 1792 of yacc.c  */
-#line 192 "cp.y"
+#line 194 "cp.y"
     {move(1);}
     break;
 
   case 83:
 /* Line 1792 of yacc.c  */
-#line 193 "cp.y"
+#line 195 "cp.y"
     {move(1);}
     break;
 
   case 84:
 /* Line 1792 of yacc.c  */
-#line 194 "cp.y"
+#line 196 "cp.y"
     {move(1);}
     break;
 
   case 85:
 /* Line 1792 of yacc.c  */
-#line 195 "cp.y"
+#line 197 "cp.y"
     {move(1);}
     break;
 
   case 86:
 /* Line 1792 of yacc.c  */
-#line 196 "cp.y"
+#line 198 "cp.y"
     {move(1);}
     break;
 
   case 87:
 /* Line 1792 of yacc.c  */
-#line 197 "cp.y"
+#line 199 "cp.y"
     {move(1);}
     break;
 
   case 88:
 /* Line 1792 of yacc.c  */
-#line 198 "cp.y"
+#line 200 "cp.y"
     {move(1);}
     break;
 
   case 89:
 /* Line 1792 of yacc.c  */
-#line 199 "cp.y"
+#line 201 "cp.y"
     {move(1);}
     break;
 
   case 91:
 /* Line 1792 of yacc.c  */
-#line 204 "cp.y"
+#line 206 "cp.y"
     {move(1);}
     break;
 
   case 93:
 /* Line 1792 of yacc.c  */
-#line 212 "cp.y"
+#line 214 "cp.y"
     {move(1);}
     break;
 
   case 94:
 /* Line 1792 of yacc.c  */
-#line 213 "cp.y"
+#line 215 "cp.y"
     {move(1);}
     break;
 
   case 107:
 /* Line 1792 of yacc.c  */
-#line 232 "cp.y"
+#line 234 "cp.y"
     {move(1);}
     break;
 
   case 108:
 /* Line 1792 of yacc.c  */
-#line 236 "cp.y"
+#line 238 "cp.y"
     {move(1);}
     break;
 
   case 110:
 /* Line 1792 of yacc.c  */
-#line 241 "cp.y"
+#line 243 "cp.y"
     {move(1);}
     break;
 
   case 111:
 /* Line 1792 of yacc.c  */
-#line 242 "cp.y"
+#line 244 "cp.y"
     {move(1);}
     break;
 
   case 112:
 /* Line 1792 of yacc.c  */
-#line 243 "cp.y"
+#line 245 "cp.y"
     {move(1);}
     break;
 
   case 113:
 /* Line 1792 of yacc.c  */
-#line 244 "cp.y"
+#line 246 "cp.y"
     {move(1);}
     break;
 
   case 114:
 /* Line 1792 of yacc.c  */
-#line 245 "cp.y"
+#line 247 "cp.y"
     {move(1);}
     break;
 
   case 115:
 /* Line 1792 of yacc.c  */
-#line 246 "cp.y"
+#line 248 "cp.y"
     {move(1);}
     break;
 
   case 116:
 /* Line 1792 of yacc.c  */
-#line 250 "cp.y"
+#line 252 "cp.y"
     {move(1);}
     break;
 
   case 117:
 /* Line 1792 of yacc.c  */
-#line 251 "cp.y"
+#line 253 "cp.y"
     {move(1);}
     break;
 
   case 118:
 /* Line 1792 of yacc.c  */
-#line 252 "cp.y"
+#line 254 "cp.y"
     {move(1);}
     break;
 
   case 119:
 /* Line 1792 of yacc.c  */
-#line 253 "cp.y"
+#line 255 "cp.y"
     {move(1);}
     break;
 
   case 120:
 /* Line 1792 of yacc.c  */
-#line 254 "cp.y"
+#line 256 "cp.y"
     {move(1);}
     break;
 
   case 121:
 /* Line 1792 of yacc.c  */
-#line 255 "cp.y"
+#line 257 "cp.y"
     {move(1);}
     break;
 
   case 122:
 /* Line 1792 of yacc.c  */
-#line 256 "cp.y"
+#line 258 "cp.y"
     {move(1);}
     break;
 
   case 123:
 /* Line 1792 of yacc.c  */
-#line 257 "cp.y"
+#line 259 "cp.y"
     {move(1);}
     break;
 
   case 124:
 /* Line 1792 of yacc.c  */
-#line 258 "cp.y"
+#line 260 "cp.y"
     {move(1);}
     break;
 
   case 125:
 /* Line 1792 of yacc.c  */
-#line 259 "cp.y"
+#line 261 "cp.y"
     {move(1);}
     break;
 
   case 126:
 /* Line 1792 of yacc.c  */
-#line 260 "cp.y"
+#line 262 "cp.y"
     {move(1);}
     break;
 
   case 127:
 /* Line 1792 of yacc.c  */
-#line 261 "cp.y"
+#line 263 "cp.y"
     {move(1);}
     break;
 
   case 131:
 /* Line 1792 of yacc.c  */
-#line 265 "cp.y"
+#line 267 "cp.y"
     {move(1);}
     break;
 
   case 132:
 /* Line 1792 of yacc.c  */
-#line 269 "cp.y"
+#line 271 "cp.y"
     {move(2);}
     break;
 
   case 133:
 /* Line 1792 of yacc.c  */
-#line 270 "cp.y"
-    {move(3); pop("struct type");}
+#line 272 "cp.y"
+    {move(3); pop(&init, "struct type");}
     break;
 
   case 134:
 /* Line 1792 of yacc.c  */
-#line 271 "cp.y"
-    {move(1); pop("struct type");}
+#line 273 "cp.y"
+    {move(1); pop(&init, "struct type");}
     break;
 
   case 135:
 /* Line 1792 of yacc.c  */
-#line 275 "cp.y"
+#line 277 "cp.y"
     {move(1);}
     break;
 
   case 136:
 /* Line 1792 of yacc.c  */
-#line 276 "cp.y"
+#line 278 "cp.y"
     {move(1);}
     break;
 
   case 139:
 /* Line 1792 of yacc.c  */
-#line 285 "cp.y"
+#line 287 "cp.y"
     {move(1);}
     break;
 
   case 140:
 /* Line 1792 of yacc.c  */
-#line 286 "cp.y"
+#line 288 "cp.y"
     {move(1);}
     break;
 
   case 147:
 /* Line 1792 of yacc.c  */
-#line 299 "cp.y"
+#line 301 "cp.y"
     {move(1);}
     break;
 
   case 148:
 /* Line 1792 of yacc.c  */
-#line 303 "cp.y"
+#line 305 "cp.y"
     {move(1);}
     break;
 
   case 149:
 /* Line 1792 of yacc.c  */
-#line 304 "cp.y"
+#line 306 "cp.y"
     {move(1);}
     break;
 
   case 151:
 /* Line 1792 of yacc.c  */
-#line 309 "cp.y"
+#line 311 "cp.y"
     {move(3);}
     break;
 
   case 152:
 /* Line 1792 of yacc.c  */
-#line 310 "cp.y"
+#line 312 "cp.y"
     {move(4);}
     break;
 
   case 153:
 /* Line 1792 of yacc.c  */
-#line 311 "cp.y"
-    {move(4); pop("enum type");}
+#line 313 "cp.y"
+    {move(4); pop(&init, "enum type");}
     break;
 
   case 154:
 /* Line 1792 of yacc.c  */
-#line 312 "cp.y"
-    {move(5); pop("enum type");}
+#line 314 "cp.y"
+    {move(5); pop(&init, "enum type");}
     break;
 
   case 155:
 /* Line 1792 of yacc.c  */
-#line 313 "cp.y"
-    {move(2); pop("enum type");}
+#line 315 "cp.y"
+    {move(2); pop(&init, "enum type");}
     break;
 
   case 157:
 /* Line 1792 of yacc.c  */
-#line 318 "cp.y"
+#line 320 "cp.y"
     {move(1);}
     break;
 
   case 158:
 /* Line 1792 of yacc.c  */
-#line 322 "cp.y"
+#line 324 "cp.y"
     {move(1);}
     break;
 
   case 160:
 /* Line 1792 of yacc.c  */
-#line 327 "cp.y"
+#line 329 "cp.y"
     {move(3);}
     break;
 
   case 161:
 /* Line 1792 of yacc.c  */
-#line 331 "cp.y"
+#line 333 "cp.y"
     {move(1);}
     break;
 
   case 162:
 /* Line 1792 of yacc.c  */
-#line 332 "cp.y"
+#line 334 "cp.y"
     {move(1);}
     break;
 
   case 163:
 /* Line 1792 of yacc.c  */
-#line 333 "cp.y"
+#line 335 "cp.y"
     {move(1);}
     break;
 
   case 164:
 /* Line 1792 of yacc.c  */
-#line 334 "cp.y"
+#line 336 "cp.y"
     {move(1);}
     break;
 
   case 165:
 /* Line 1792 of yacc.c  */
-#line 338 "cp.y"
+#line 340 "cp.y"
     {move(1);}
     break;
 
   case 166:
 /* Line 1792 of yacc.c  */
-#line 339 "cp.y"
+#line 341 "cp.y"
     {move(1);}
     break;
 
   case 167:
 /* Line 1792 of yacc.c  */
-#line 343 "cp.y"
+#line 345 "cp.y"
     {move(3);}
     break;
 
   case 168:
 /* Line 1792 of yacc.c  */
-#line 344 "cp.y"
+#line 346 "cp.y"
     {move(3);}
     break;
 
   case 171:
 /* Line 1792 of yacc.c  */
-#line 353 "cp.y"
-    {move(1); pop("simple var");}
+#line 355 "cp.y"
+    {move(1); pop(&init, "declarator var");}
     break;
 
   case 172:
 /* Line 1792 of yacc.c  */
-#line 354 "cp.y"
+#line 356 "cp.y"
     {move(2);}
     break;
 
   case 173:
 /* Line 1792 of yacc.c  */
-#line 355 "cp.y"
+#line 357 "cp.y"
     {move(2);}
     break;
 
   case 174:
 /* Line 1792 of yacc.c  */
-#line 356 "cp.y"
+#line 358 "cp.y"
     {move(3);}
     break;
 
   case 175:
 /* Line 1792 of yacc.c  */
-#line 357 "cp.y"
+#line 359 "cp.y"
     {move(3);}
     break;
 
   case 176:
 /* Line 1792 of yacc.c  */
-#line 358 "cp.y"
+#line 360 "cp.y"
     {move(3);}
     break;
 
   case 177:
 /* Line 1792 of yacc.c  */
-#line 359 "cp.y"
+#line 361 "cp.y"
     {move(3);}
     break;
 
   case 178:
 /* Line 1792 of yacc.c  */
-#line 360 "cp.y"
+#line 362 "cp.y"
     {move(3);}
     break;
 
   case 179:
 /* Line 1792 of yacc.c  */
-#line 361 "cp.y"
+#line 363 "cp.y"
     {move(2);}
     break;
 
   case 180:
 /* Line 1792 of yacc.c  */
-#line 362 "cp.y"
+#line 364 "cp.y"
     {move(2);}
     break;
 
   case 181:
 /* Line 1792 of yacc.c  */
-#line 363 "cp.y"
+#line 365 "cp.y"
     {move(2);}
     break;
 
   case 182:
 /* Line 1792 of yacc.c  */
-#line 364 "cp.y"
+#line 366 "cp.y"
     {move(2);}
     break;
 
   case 183:
 /* Line 1792 of yacc.c  */
-#line 365 "cp.y"
+#line 367 "cp.y"
     {move(2);}
     break;
 
   case 184:
 /* Line 1792 of yacc.c  */
-#line 366 "cp.y"
+#line 368 "cp.y"
     {move(2);}
     break;
 
   case 185:
 /* Line 1792 of yacc.c  */
-#line 370 "cp.y"
+#line 372 "cp.y"
     {move(1);}
     break;
 
   case 186:
 /* Line 1792 of yacc.c  */
-#line 371 "cp.y"
+#line 373 "cp.y"
     {move(1);}
     break;
 
   case 187:
 /* Line 1792 of yacc.c  */
-#line 372 "cp.y"
+#line 374 "cp.y"
     {move(1);}
     break;
 
   case 188:
 /* Line 1792 of yacc.c  */
-#line 373 "cp.y"
+#line 375 "cp.y"
     {move(1);}
     break;
 
   case 191:
 /* Line 1792 of yacc.c  */
-#line 383 "cp.y"
+#line 385 "cp.y"
     {move(2);}
     break;
 
   case 194:
 /* Line 1792 of yacc.c  */
-#line 389 "cp.y"
+#line 391 "cp.y"
     {move(1);}
     break;
 
   case 198:
 /* Line 1792 of yacc.c  */
-#line 399 "cp.y"
+#line 401 "cp.y"
     {move(1); ;;}
     break;
 
   case 199:
 /* Line 1792 of yacc.c  */
-#line 400 "cp.y"
-    {move(2); ;;}
+#line 402 "cp.y"
+    {move(2); }
     break;
 
   case 205:
 /* Line 1792 of yacc.c  */
-#line 415 "cp.y"
+#line 417 "cp.y"
     {move(2);}
     break;
 
   case 206:
 /* Line 1792 of yacc.c  */
-#line 416 "cp.y"
+#line 418 "cp.y"
     {move(2);}
     break;
 
   case 207:
 /* Line 1792 of yacc.c  */
-#line 417 "cp.y"
+#line 419 "cp.y"
     {move(3);}
     break;
 
   case 208:
 /* Line 1792 of yacc.c  */
-#line 418 "cp.y"
+#line 420 "cp.y"
     {move(3);}
     break;
 
   case 209:
 /* Line 1792 of yacc.c  */
-#line 419 "cp.y"
+#line 421 "cp.y"
     {move(3);}
     break;
 
   case 210:
 /* Line 1792 of yacc.c  */
-#line 420 "cp.y"
+#line 422 "cp.y"
     {move(3);}
     break;
 
   case 211:
 /* Line 1792 of yacc.c  */
-#line 421 "cp.y"
+#line 423 "cp.y"
     {move(2);}
     break;
 
   case 212:
 /* Line 1792 of yacc.c  */
-#line 422 "cp.y"
+#line 424 "cp.y"
     {move(2);}
     break;
 
   case 213:
 /* Line 1792 of yacc.c  */
-#line 423 "cp.y"
+#line 425 "cp.y"
     {move(2);}
     break;
 
   case 214:
 /* Line 1792 of yacc.c  */
-#line 424 "cp.y"
+#line 426 "cp.y"
     {move(2);}
     break;
 
   case 215:
 /* Line 1792 of yacc.c  */
-#line 425 "cp.y"
+#line 427 "cp.y"
     {move(3);}
     break;
 
   case 216:
 /* Line 1792 of yacc.c  */
-#line 426 "cp.y"
+#line 428 "cp.y"
     {move(3);}
     break;
 
   case 217:
 /* Line 1792 of yacc.c  */
-#line 427 "cp.y"
+#line 429 "cp.y"
     {move(3);}
     break;
 
   case 218:
 /* Line 1792 of yacc.c  */
-#line 428 "cp.y"
+#line 430 "cp.y"
     {move(2);}
     break;
 
   case 219:
 /* Line 1792 of yacc.c  */
-#line 429 "cp.y"
+#line 431 "cp.y"
     {move(3);}
     break;
 
   case 220:
 /* Line 1792 of yacc.c  */
-#line 430 "cp.y"
+#line 432 "cp.y"
     {move(2);}
     break;
 
   case 221:
 /* Line 1792 of yacc.c  */
-#line 431 "cp.y"
+#line 433 "cp.y"
     {move(2);}
     break;
 
   case 222:
 /* Line 1792 of yacc.c  */
-#line 432 "cp.y"
+#line 434 "cp.y"
     {move(2);}
     break;
 
   case 223:
 /* Line 1792 of yacc.c  */
-#line 433 "cp.y"
+#line 435 "cp.y"
     {move(2);}
     break;
 
   case 224:
 /* Line 1792 of yacc.c  */
-#line 434 "cp.y"
+#line 436 "cp.y"
     {move(2);}
     break;
 
   case 225:
 /* Line 1792 of yacc.c  */
-#line 435 "cp.y"
+#line 437 "cp.y"
     {move(2);}
     break;
 
   case 226:
 /* Line 1792 of yacc.c  */
-#line 439 "cp.y"
+#line 441 "cp.y"
     {move(2);}
     break;
 
   case 227:
 /* Line 1792 of yacc.c  */
-#line 440 "cp.y"
+#line 442 "cp.y"
     {move(3);}
     break;
 
   case 231:
 /* Line 1792 of yacc.c  */
-#line 447 "cp.y"
+#line 449 "cp.y"
     {move(1);}
     break;
 
   case 232:
 /* Line 1792 of yacc.c  */
-#line 448 "cp.y"
+#line 450 "cp.y"
     {move(1);}
     break;
 
   case 233:
 /* Line 1792 of yacc.c  */
-#line 452 "cp.y"
+#line 454 "cp.y"
     {move(1);}
     break;
 
   case 236:
 /* Line 1792 of yacc.c  */
-#line 461 "cp.y"
+#line 463 "cp.y"
     {move(2);}
     break;
 
   case 237:
 /* Line 1792 of yacc.c  */
-#line 462 "cp.y"
-    {move(2);  pop("designator");}
+#line 464 "cp.y"
+    {move(2);  pop(&init, "designator");}
     break;
 
   case 238:
 /* Line 1792 of yacc.c  */
-#line 466 "cp.y"
+#line 468 "cp.y"
     {move(6);}
     break;
 
   case 245:
 /* Line 1792 of yacc.c  */
-#line 479 "cp.y"
-    {move(2);  pop("label");}
+#line 481 "cp.y"
+    {move(2);  pop(&init, "label");}
     break;
 
   case 246:
 /* Line 1792 of yacc.c  */
-#line 480 "cp.y"
+#line 482 "cp.y"
     {move(2);}
     break;
 
   case 247:
 /* Line 1792 of yacc.c  */
-#line 481 "cp.y"
+#line 483 "cp.y"
     {move(2);}
     break;
 
   case 248:
 /* Line 1792 of yacc.c  */
-#line 485 "cp.y"
+#line 487 "cp.y"
     {move(2);}
     break;
 
   case 249:
 /* Line 1792 of yacc.c  */
-#line 486 "cp.y"
+#line 488 "cp.y"
     {move(2);}
     break;
 
   case 254:
 /* Line 1792 of yacc.c  */
-#line 500 "cp.y"
+#line 502 "cp.y"
     {move(1);}
     break;
 
   case 255:
 /* Line 1792 of yacc.c  */
-#line 501 "cp.y"
+#line 503 "cp.y"
     {move(1);}
     break;
 
   case 256:
 /* Line 1792 of yacc.c  */
-#line 505 "cp.y"
+#line 507 "cp.y"
     {move(4);}
     break;
 
   case 257:
 /* Line 1792 of yacc.c  */
-#line 506 "cp.y"
+#line 508 "cp.y"
     {move(3);}
     break;
 
   case 258:
 /* Line 1792 of yacc.c  */
-#line 507 "cp.y"
+#line 509 "cp.y"
     {move(3);}
     break;
 
   case 259:
 /* Line 1792 of yacc.c  */
-#line 511 "cp.y"
+#line 513 "cp.y"
     {move(3);}
     break;
 
   case 260:
 /* Line 1792 of yacc.c  */
-#line 512 "cp.y"
+#line 514 "cp.y"
     {move(5);}
     break;
 
   case 261:
 /* Line 1792 of yacc.c  */
-#line 513 "cp.y"
+#line 515 "cp.y"
     {move(3);}
     break;
 
   case 262:
 /* Line 1792 of yacc.c  */
-#line 514 "cp.y"
+#line 516 "cp.y"
     {move(3);}
     break;
 
   case 263:
 /* Line 1792 of yacc.c  */
-#line 515 "cp.y"
+#line 517 "cp.y"
     {move(3);}
     break;
 
   case 264:
 /* Line 1792 of yacc.c  */
-#line 516 "cp.y"
+#line 518 "cp.y"
     {move(3);}
     break;
 
   case 265:
 /* Line 1792 of yacc.c  */
-#line 520 "cp.y"
-    {move(3); pop("goto label");}
+#line 522 "cp.y"
+    {move(3); pop(&init, "goto label");}
     break;
 
   case 266:
-/* Line 1792 of yacc.c  */
-#line 521 "cp.y"
-    {move(2);}
-    break;
-
-  case 267:
-/* Line 1792 of yacc.c  */
-#line 522 "cp.y"
-    {move(2);}
-    break;
-
-  case 268:
 /* Line 1792 of yacc.c  */
 #line 523 "cp.y"
     {move(2);}
     break;
 
-  case 269:
+  case 267:
 /* Line 1792 of yacc.c  */
 #line 524 "cp.y"
     {move(2);}
     break;
 
+  case 268:
+/* Line 1792 of yacc.c  */
+#line 525 "cp.y"
+    {move(2);}
+    break;
+
+  case 269:
+/* Line 1792 of yacc.c  */
+#line 526 "cp.y"
+    {move(2);}
+    break;
+
 
 /* Line 1792 of yacc.c  */
-#line 3433 "cp.tab.c"
+#line 3435 "cp.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3661,7 +3663,7 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 547 "cp.y"
+#line 549 "cp.y"
 
 
 FILE *yyin;
@@ -3671,14 +3673,11 @@ node *last = NULL;
 node *prev = NULL;
 
 int ln, currloc = 0, currline = 0;
-int stackct = 0;
 
 line *linearr; 
 infonode *infoarr[109];
-infonode *top = NULL, *pre = NULL, *post = NULL, *upper = NULL;
 
-void dispstk(void);
-void disprecord(void);
+void dispstk(infonode *top);
 
 node *nav(int loc)
 {
@@ -3693,107 +3692,77 @@ node *nav(int loc)
 	return going;
 }
 
-void push(char *tok)
+void push(infonode **top, infonode *inf, char *tok)
 {
-	if (top == NULL)
+	printf("push: %s\n", tok);
+	if (top != NULL)
     {
-        top =(infonode *)malloc(sizeof(infonode));
-        top->tok = malloc(strlen(tok)+1);
-		top->loc = currloc;
-		strcpy(top->tok,tok);
-        top->next = NULL;
-    }
-    else
-    {
-        infonode *temp = (infonode *)malloc(sizeof(infonode));
-        temp->next = top;
-		temp->tok = malloc(strlen(tok)+1);
-		strcpy(temp->tok,tok);
-		temp->loc = currloc;
-        top = temp;
+        infonode *newnode =(infonode *)malloc(sizeof(infonode));
+		if (inf == NULL)
+		{
+			newnode->loc = currloc;
+		}
+		else
+		{
+			newnode->loc = inf->loc;
+		}
+		newnode->tok = malloc(strlen(tok)+1);
+		strcpy(newnode->tok,tok);
+		newnode->next = *top;
+		*top = newnode;
     }
 	printf("in push\n");
-	dispstk();
-	post = upper;
-	upper = NULL;
-	pre = NULL;
+	dispstk(init);
+	dispstk(rec);
+	printf("push end\n\n");
+}
+
+void addinfo(infonode *inf)
+{
+	node *nd = nav(inf->loc);
+	free(nd->type);
+	nd->type = malloc(strlen(inf->tok)+1);
+	strcpy(nd->type,inf->tok);
 }
 
 void record(infonode *inf, char *type)
 {
+	printf("record start\n");
 	free(inf->tok);
 	inf->tok = malloc(strlen(type)+1);
-	strcpy(inf->tok, type);
-	if (upper == NULL)
-	{
-		upper = inf;
-	}
-	if (pre!=NULL)
-	{
-		pre->next = inf;
-		pre = pre->next;
-	}
-	else
-		pre = inf;
-	printf("pretok: %s\n",pre->tok);
-	pre->next = post;
+	strcpy(inf->tok,type);
+	push(&rec, inf, type);
+	printf("record end\n");
 }
 
-void disprecord(void)
-{
-	printf("\ndisprecord\n");
-	infonode *iter;
-	if (upper == NULL)
-	{
-		iter = post;
-	}
-	else 
-		iter = upper;
-		printf("iter is upper\n");
-	while (iter!=NULL)
-	{
-		printf("yay\n");
-		printf("loc: %d, type: %s\n", iter->loc, iter->tok);
-		printf("printed\n");
-		iter = iter->next;
-	}
-}
-
-void addinfo(infonode *inf, char *type)
-{
-	node *temp = nav(inf->loc);
-	free(temp->type);
-	temp->type = malloc(strlen(type)+1);
-	strcpy(temp->type,type);
-}
-
-void pop(char *type)
+void pop(infonode **top, char *type)
 {
     printf("popping: %s\n",type);
-	infonode *top1 = top;
+	infonode *top1;
  
-    if (top1 == NULL)
+    if (top == NULL)
     {
         printf("\n Error : Trying to pop from empty stack");
         return;
     }
     else
-        top1 = top1->next;
-	if (type)
-		record(top, type);
-		disprecord();
-    free(top);
-    top = top1;
-    stackct--;
+	{
+        top1 = *top;
+		if (type)
+			record(*top, type);
+		*top = top1->next;
+		free(top1);
+	}
 }
 
-void dispstk(void)
+void dispstk(infonode *top)
 {
+	printf("\ndispstk:\n");
 	infonode *top1 = top;
  
     if (top1 == NULL)
     {
-        printf("Stack is empty");
+        printf("Stack is empty\n");
         return;
     }
  
@@ -3852,6 +3821,7 @@ void Node(char *tok, char type[])
 
 int main(int argc, char *argv[])
 {
+	
 	if (argc == 1)
 	{
 		printf("no file given\n");
@@ -3878,22 +3848,26 @@ int main(int argc, char *argv[])
 	{
 		yyparse();
 	}
-	
-	// node *gt = nav(204);
-	// printf("hey %s\n",gt->tok);
 
 	printf("currlex: %d\n",currlex);
 	
 	if (first != NULL)
 		nextline();
+		
+	infonode *store = rec;
+	while (store)
+	{
+		addinfo(store);
+		store = store->next;
+	}
 	
 	printf("$$$$$$$$$$$\n");
-	//disp(linearr, ln);
+	disp(linearr, ln);
 	printf("$$$$$$$$$$$\n");
 	
 	printf("\n");
-	dispstk();
-	disprecord();
+	dispstk(init);
+	dispstk(rec);
 	
 	fclose(yyin);
 }

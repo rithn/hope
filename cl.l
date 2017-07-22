@@ -32,7 +32,9 @@ extern void *nextline(void);
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
 
 extern void Node(char *tok, char type[]);
-extern void push(char *tok);
+extern void push(infonode **top, infonode *inf, char *tok);
+
+extern infonode *init;
 
 static void comment(void);
 static void prep(void);
@@ -206,7 +208,7 @@ static void prep(void)
 
 static int check_type(void)
 {
-	push(yytext);
+	push(&init, NULL, yytext);
 	switch (sym_type(yytext))
     {
     case TYPEDEF_NAME:	/* previously defined */

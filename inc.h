@@ -13,8 +13,8 @@ typedef struct infonode {
 
 typedef struct line {
 	int n;
-	node *start;
+	struct node *start;
 } line;
 
-void disp(line *linearr, int ln);
+void disp(struct line *linearr, int ln);
 

@@ -833,13 +833,15 @@ extern void *nextline(void);
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
 
 extern void Node(char *tok, char type[]);
-extern void push(char *tok);
+extern void push(infonode **top, infonode *inf, char *tok);
+
+extern infonode *init;
 
 static void comment(void);
 static void prep(void);
 static int check_type(void);
-#line 841 "lex.yy.c"
-#line 842 "lex.yy.c"
+#line 843 "lex.yy.c"
+#line 844 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -1056,9 +1058,9 @@ YY_DECL
 		}
 
 	{
-#line 42 "cl.l"
+#line 44 "cl.l"
 
-#line 1061 "lex.yy.c"
+#line 1063 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1117,571 +1119,571 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 43 "cl.l"
+#line 45 "cl.l"
 { comment(); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 44 "cl.l"
+#line 46 "cl.l"
 { prep(); }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 45 "cl.l"
+#line 47 "cl.l"
 { /* consume //-comment */ }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 47 "cl.l"
+#line 49 "cl.l"
 { Node("auto ","AUTO"); return(AUTO); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 48 "cl.l"
+#line 50 "cl.l"
 { Node("bool ", "BOOL"); return(BOOL); }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 49 "cl.l"
+#line 51 "cl.l"
 { Node("break ","BREAK"); return(BREAK); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 50 "cl.l"
+#line 52 "cl.l"
 { Node("case ","CASE"); return(CASE); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 51 "cl.l"
+#line 53 "cl.l"
 { Node("char ","CHAR"); return(CHAR); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 52 "cl.l"
+#line 54 "cl.l"
 { Node("const ","CONST"); return(CONST); }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 53 "cl.l"
+#line 55 "cl.l"
 { Node("continue ","CONTINUE"); return(CONTINUE); }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 54 "cl.l"
+#line 56 "cl.l"
 { Node("default ","DEFAULT"); return(DEFAULT); }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 55 "cl.l"
+#line 57 "cl.l"
 { Node("do ","DO"); return(DO); }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 56 "cl.l"
+#line 58 "cl.l"
 { Node("double ","DOUBLE"); return(DOUBLE); }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 57 "cl.l"
+#line 59 "cl.l"
 { Node("else ","ELSE"); return(ELSE); }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 58 "cl.l"
+#line 60 "cl.l"
 { Node("enum ","ENUM"); return(ENUM); }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 59 "cl.l"
+#line 61 "cl.l"
 { Node("extern ","EXTERN"); return(EXTERN); }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 60 "cl.l"
+#line 62 "cl.l"
 { Node("false ", "FALSEVAL"); return(FALSEVAL);}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 61 "cl.l"
+#line 63 "cl.l"
 { Node("float ","FLOAT"); return(FLOAT); }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 62 "cl.l"
+#line 64 "cl.l"
 { Node("for ","FOR"); return(FOR); }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 63 "cl.l"
+#line 65 "cl.l"
 { Node("goto ","GOTO"); return(GOTO); }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 64 "cl.l"
+#line 66 "cl.l"
 { Node("if ","IF"); return(IF); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 65 "cl.l"
+#line 67 "cl.l"
 { Node("inline ","INLINE"); return(INLINE); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 66 "cl.l"
+#line 68 "cl.l"
 { Node("int ","INT"); return(INT); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 67 "cl.l"
+#line 69 "cl.l"
 { Node("long ","LONG"); return(LONG); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 68 "cl.l"
+#line 70 "cl.l"
 { Node("register ","REGISTER"); return(REGISTER); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 69 "cl.l"
+#line 71 "cl.l"
 { Node("restrict ","RESTRICT"); return(RESTRICT); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 70 "cl.l"
+#line 72 "cl.l"
 { Node("return ","RETURN"); return(RETURN); }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 71 "cl.l"
+#line 73 "cl.l"
 { Node("short ","SHORT"); return(SHORT); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 72 "cl.l"
+#line 74 "cl.l"
 { Node("signed ","SIGNED"); return(SIGNED); }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 73 "cl.l"
+#line 75 "cl.l"
 { Node("sizeof ","SIZEOF"); return(SIZEOF); }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 74 "cl.l"
+#line 76 "cl.l"
 { Node("static ","STATIC"); return(STATIC); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 75 "cl.l"
+#line 77 "cl.l"
 { Node("struct ","STRUCT"); return(STRUCT); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 76 "cl.l"
+#line 78 "cl.l"
 { Node("switch ","SWITCH"); return(SWITCH); }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 77 "cl.l"
+#line 79 "cl.l"
 { Node("true ", "TRUEVAL"); return(TRUEVAL); }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 78 "cl.l"
+#line 80 "cl.l"
 { Node("typedef ","TYPEDEF"); return(TYPEDEF); }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 79 "cl.l"
+#line 81 "cl.l"
 { Node("union ","UNION"); return(UNION); }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 80 "cl.l"
+#line 82 "cl.l"
 { Node("unsigned ","UNSIGNED"); return(UNSIGNED); }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 81 "cl.l"
+#line 83 "cl.l"
 { Node("void ","VOID"); return(VOID); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 82 "cl.l"
+#line 84 "cl.l"
 { Node("volatile ","VOLATILE"); return(VOLATILE); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 83 "cl.l"
+#line 85 "cl.l"
 { Node("while ","WHILE"); return(WHILE); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 84 "cl.l"
+#line 86 "cl.l"
 { Node("alignas ","ALIGNAS"); return ALIGNAS; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 85 "cl.l"
+#line 87 "cl.l"
 { Node("alignof ","ALIGNOF"); return ALIGNOF; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 86 "cl.l"
+#line 88 "cl.l"
 { Node("atomic ","ATOMIC"); return ATOMIC; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 87 "cl.l"
+#line 89 "cl.l"
 { Node("bool ","BOOL"); return BOOL; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 88 "cl.l"
+#line 90 "cl.l"
 { Node("complex ","COMPLEX"); return COMPLEX; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 89 "cl.l"
+#line 91 "cl.l"
 { Node("generic ","GENERIC"); return GENERIC; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 90 "cl.l"
+#line 92 "cl.l"
 { Node("imaginary ","IMAGINARY"); return IMAGINARY; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 91 "cl.l"
+#line 93 "cl.l"
 { Node("noreturn ","NORETURN"); return NORETURN; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 92 "cl.l"
+#line 94 "cl.l"
 { Node("static ","STATIC_ASSERT"); return STATIC_ASSERT; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 93 "cl.l"
+#line 95 "cl.l"
 { Node("thread ","THREAD_LOCAL"); return THREAD_LOCAL; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 94 "cl.l"
+#line 96 "cl.l"
 { Node("func ","FUNC_NAME"); return FUNC_NAME; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 96 "cl.l"
+#line 98 "cl.l"
 { return check_type(); }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 98 "cl.l"
+#line 100 "cl.l"
 { Node(yytext,"I_CONSTANT"); return I_CONSTANT; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 99 "cl.l"
+#line 101 "cl.l"
 { Node(yytext,"I_CONSTANT"); return I_CONSTANT; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 100 "cl.l"
+#line 102 "cl.l"
 { Node(yytext,"I_CONSTANT"); return I_CONSTANT; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 101 "cl.l"
+#line 103 "cl.l"
 { Node(yytext,"I_CONSTANT"); return I_CONSTANT; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 103 "cl.l"
+#line 105 "cl.l"
 { Node(yytext,"F_CONSTANT"); return F_CONSTANT; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 104 "cl.l"
+#line 106 "cl.l"
 { Node(yytext,"F_CONSTANT"); return F_CONSTANT; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 105 "cl.l"
+#line 107 "cl.l"
 { Node(yytext,"F_CONSTANT"); return F_CONSTANT; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 106 "cl.l"
+#line 108 "cl.l"
 { Node(yytext,"F_CONSTANT"); return F_CONSTANT; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 107 "cl.l"
+#line 109 "cl.l"
 { Node(yytext,"F_CONSTANT"); return F_CONSTANT; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 108 "cl.l"
+#line 110 "cl.l"
 { Node(yytext,"F_CONSTANT"); return F_CONSTANT; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 110 "cl.l"
+#line 112 "cl.l"
 {Node(yytext,"STRING_LITERAL"); return STRING_LITERAL; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 112 "cl.l"
+#line 114 "cl.l"
 { Node("... ","ELLIPSIS"); return ELLIPSIS; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 113 "cl.l"
+#line 115 "cl.l"
 { Node(">>= ","RIGHT_ASSIGN"); return RIGHT_ASSIGN; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 114 "cl.l"
+#line 116 "cl.l"
 { Node("<<= ","LEFT_ASSIGN"); return LEFT_ASSIGN; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 115 "cl.l"
+#line 117 "cl.l"
 { Node("+= ","ADD_ASSIGN"); return ADD_ASSIGN; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 116 "cl.l"
+#line 118 "cl.l"
 { Node("-= ","SUB_ASSIGN"); return SUB_ASSIGN; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 117 "cl.l"
+#line 119 "cl.l"
 { Node("*= ","MUL_ASSIGN"); return MUL_ASSIGN; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 118 "cl.l"
+#line 120 "cl.l"
 { Node("/= ","DIV_ASSIGN"); return DIV_ASSIGN; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 119 "cl.l"
+#line 121 "cl.l"
 { Node("%= ","MOD_ASSIGN"); return MOD_ASSIGN; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 120 "cl.l"
+#line 122 "cl.l"
 { Node("&= ","AND_ASSIGN"); return AND_ASSIGN; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 121 "cl.l"
+#line 123 "cl.l"
 { Node("^= ","XOR_ASSIGN"); return XOR_ASSIGN; }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 122 "cl.l"
+#line 124 "cl.l"
 { Node("|= ","OR_ASSIGN"); return OR_ASSIGN; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 123 "cl.l"
+#line 125 "cl.l"
 { Node(">> ","RIGHT_OP"); return RIGHT_OP; }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 124 "cl.l"
+#line 126 "cl.l"
 { Node("<< ","LEFT_OP"); return LEFT_OP; }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 125 "cl.l"
+#line 127 "cl.l"
 { Node("++ ","INC_OP"); return INC_OP; }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 126 "cl.l"
+#line 128 "cl.l"
 { Node("-- ","DEC_OP"); return DEC_OP; }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 127 "cl.l"
+#line 129 "cl.l"
 { Node("-> ","PTR_OP"); return PTR_OP; }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 128 "cl.l"
+#line 130 "cl.l"
 { Node("&& ","AND_OP"); return AND_OP; }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 129 "cl.l"
+#line 131 "cl.l"
 { Node("|| ","OR_OP"); return OR_OP; }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 130 "cl.l"
+#line 132 "cl.l"
 { Node("<= ","LE_OP"); return LE_OP; }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 131 "cl.l"
+#line 133 "cl.l"
 { Node(">= ","GE_OP"); return GE_OP; }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 132 "cl.l"
+#line 134 "cl.l"
 { Node("== ","EQ_OP"); return EQ_OP; }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 133 "cl.l"
+#line 135 "cl.l"
 { Node("!= ","NE_OP"); return NE_OP; }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 134 "cl.l"
+#line 136 "cl.l"
 { Node("; ","';'"); return ';'; }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 135 "cl.l"
+#line 137 "cl.l"
 { Node("{ ","'{'"); return '{'; }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 136 "cl.l"
+#line 138 "cl.l"
 { Node("} ","'}'"); return '}'; }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 137 "cl.l"
+#line 139 "cl.l"
 { Node(", ","','"); return ','; }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 138 "cl.l"
+#line 140 "cl.l"
 { Node(": ","':'"); return ':'; }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 139 "cl.l"
+#line 141 "cl.l"
 { Node("= ","'='"); return '='; }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 140 "cl.l"
+#line 142 "cl.l"
 { Node("( ","'('"); return '('; }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 141 "cl.l"
+#line 143 "cl.l"
 { Node(") ","')'"); return ')'; }
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 142 "cl.l"
+#line 144 "cl.l"
 { Node("] ","'['"); return '['; }
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 143 "cl.l"
+#line 145 "cl.l"
 { Node("[ ","']'"); return ']'; }
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 144 "cl.l"
+#line 146 "cl.l"
 { Node(". ","'.'"); return '.'; }
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 145 "cl.l"
+#line 147 "cl.l"
 { Node("& ","'&'"); return '&'; }
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 146 "cl.l"
+#line 148 "cl.l"
 { Node("! ","'!'"); return '!'; }
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 147 "cl.l"
+#line 149 "cl.l"
 { Node("~ ","'~'"); return '~'; }
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
-#line 148 "cl.l"
+#line 150 "cl.l"
 { Node("- ","'-'"); return '-'; }
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 149 "cl.l"
+#line 151 "cl.l"
 { Node("+ ","'+'"); return '+'; }
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 150 "cl.l"
+#line 152 "cl.l"
 { Node("* ","'*'"); return '*'; }
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 151 "cl.l"
+#line 153 "cl.l"
 { Node("/ ","'/'"); return '/'; }
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 152 "cl.l"
+#line 154 "cl.l"
 { Node("% ","'%'"); return '%'; }
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 153 "cl.l"
+#line 155 "cl.l"
 { Node("< ","'<'"); return '<'; }
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 154 "cl.l"
+#line 156 "cl.l"
 { Node("> ","'>'"); return '>'; }
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 155 "cl.l"
+#line 157 "cl.l"
 { Node("^ ","'^'"); return '^'; }
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 156 "cl.l"
+#line 158 "cl.l"
 { Node("| ","'|'"); return '|'; }
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 157 "cl.l"
+#line 159 "cl.l"
 { Node("? ","'?'"); return '?'; }
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 159 "cl.l"
+#line 161 "cl.l"
 { /* whitespace separates tokens */ }
 	YY_BREAK
 case 111:
 /* rule 111 can match eol */
 YY_RULE_SETUP
-#line 160 "cl.l"
+#line 162 "cl.l"
 {nextline(); prev = NULL; printf("\n");}
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 161 "cl.l"
+#line 163 "cl.l"
 {; }
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 163 "cl.l"
+#line 165 "cl.l"
 ECHO;
 	YY_BREAK
-#line 1684 "lex.yy.c"
+#line 1686 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2682,7 +2684,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 163 "cl.l"
+#line 165 "cl.l"
 
 
 int yywrap(void)        /* called at end of input */
@@ -2729,7 +2731,7 @@ static void prep(void)
 
 static int check_type(void)
 {
-	push(yytext);
+	push(&init, NULL, yytext);
 	switch (sym_type(yytext))
     {
     case TYPEDEF_NAME:	/* previously defined */

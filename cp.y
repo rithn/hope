@@ -9,8 +9,10 @@ void nextline(void);
 void move(int n);
 
 int currlex = 0;
-void push(char *tok);
-void pop(char *type);
+void push(infonode **top, infonode *inf, char *tok);
+void pop(infonode **top, char *type);
+
+infonode *init = NULL, *rec = NULL;
 
 enum {F = 1, ST, E, ST_ID};
 
@@ -37,7 +39,7 @@ enum {F = 1, ST, E, ST_ID};
 %%
 
 primary_expression
-	: IDENTIFIER			{move(1);}
+	: IDENTIFIER			{move(1);pop(&init, "expression var");}
 	| constant				
 	| string				
 	| '(' expression ')'	{move(2);}
@@ -53,7 +55,7 @@ constant
 	;
 
 enumeration_constant		/* before it has been defined as such */
-	: IDENTIFIER			{move(1); pop("enum declaration");}
+	: IDENTIFIER			{move(1); pop(&init, "enum declaration");}
 	;
 
 string
@@ -80,8 +82,8 @@ postfix_expression
 	| postfix_expression '[' expression ']'					{move(2);}
 	| postfix_expression '(' ')'							{move(2);}
 	| postfix_expression '(' argument_expression_list ')'	{move(2);}
-	| postfix_expression '.' IDENTIFIER						{move(2); pop("struct part");}
-	| postfix_expression PTR_OP IDENTIFIER					{move(2); pop("struct part");}
+	| postfix_expression '.' IDENTIFIER						{move(2); pop(&init, "struct part");}
+	| postfix_expression PTR_OP IDENTIFIER					{move(2); pop(&init, "struct part");}
 	| postfix_expression INC_OP								{move(1);}
 	| postfix_expression DEC_OP								{move(1);}
 	| '(' type_name ')' '{' initializer_list '}'			{move(4);}
@@ -267,8 +269,8 @@ type_specifier
 
 struct_or_union_specifier
 	: struct_or_union '{' struct_declaration_list '}'					{move(2);}
-	| struct_or_union IDENTIFIER '{' struct_declaration_list '}'		{move(3); pop("struct type");}
-	| struct_or_union IDENTIFIER										{move(1); pop("struct type");}				
+	| struct_or_union IDENTIFIER '{' struct_declaration_list '}'		{move(3); pop(&init, "struct type");}
+	| struct_or_union IDENTIFIER										{move(1); pop(&init, "struct type");}				
 	;
 
 struct_or_union
@@ -308,9 +310,9 @@ struct_declarator
 enum_specifier
 	: ENUM '{' enumerator_list '}'					{move(3);}
 	| ENUM '{' enumerator_list ',' '}'				{move(4);}
-	| ENUM IDENTIFIER '{' enumerator_list '}'		{move(4); pop("enum type");}
-	| ENUM IDENTIFIER '{' enumerator_list ',' '}'	{move(5); pop("enum type");}
-	| ENUM IDENTIFIER								{move(2); pop("enum type");}
+	| ENUM IDENTIFIER '{' enumerator_list '}'		{move(4); pop(&init, "enum type");}
+	| ENUM IDENTIFIER '{' enumerator_list ',' '}'	{move(5); pop(&init, "enum type");}
+	| ENUM IDENTIFIER								{move(2); pop(&init, "enum type");}
 	;
 
 enumerator_list
@@ -350,7 +352,7 @@ declarator
 	;
 
 direct_declarator
-	: IDENTIFIER												{move(1); pop("simple var");}
+	: IDENTIFIER												{move(1); pop(&init, "declarator var");}
 	| '(' declarator ')'										{move(2);}
 	| direct_declarator '[' ']'									{move(2);}
 	| direct_declarator '[' '*' ']'								{move(3);}
@@ -397,7 +399,7 @@ parameter_declaration
 
 identifier_list
 	: IDENTIFIER									{move(1); ;;}
-	| identifier_list ',' IDENTIFIER				{move(2); ;;}
+	| identifier_list ',' IDENTIFIER				{move(2); }
 	;
 
 type_name
@@ -459,7 +461,7 @@ designator_list
 
 designator
 	: '[' constant_expression ']'		{move(2);}
-	| '.' IDENTIFIER					{move(2);  pop("designator");}
+	| '.' IDENTIFIER					{move(2);  pop(&init, "designator");}
 	;
 
 static_assert_declaration
@@ -476,7 +478,7 @@ statement
 	;
 
 labeled_statement
-	: IDENTIFIER ':' statement						{move(2);  pop("label");}
+	: IDENTIFIER ':' statement						{move(2);  pop(&init, "label");}
 	| CASE constant_expression ':' statement		{move(2);}
 	| DEFAULT ':' statement							{move(2);}
 	;
@@ -517,7 +519,7 @@ iteration_statement
 	;
 
 jump_statement
-	: GOTO IDENTIFIER ';'		{move(3); pop("goto label");}
+	: GOTO IDENTIFIER ';'		{move(3); pop(&init, "goto label");}
 	| CONTINUE ';'				{move(2);}
 	| BREAK ';'					{move(2);}
 	| RETURN ';'				{move(2);}
@@ -553,14 +555,11 @@ node *last = NULL;
 node *prev = NULL;
 
 int ln, currloc = 0, currline = 0;
-int stackct = 0;
 
 line *linearr; 
 infonode *infoarr[109];
-infonode *top = NULL, *pre = NULL, *post = NULL, *upper = NULL;
 
-void dispstk(void);
-void disprecord(void);
+void dispstk(infonode *top);
 
 node *nav(int loc)
 {
@@ -575,107 +574,77 @@ node *nav(int loc)
 	return going;
 }
 
-void push(char *tok)
+void push(infonode **top, infonode *inf, char *tok)
 {
-	if (top == NULL)
+	printf("push: %s\n", tok);
+	if (top != NULL)
     {
-        top =(infonode *)malloc(sizeof(infonode));
-        top->tok = malloc(strlen(tok)+1);
-		top->loc = currloc;
-		strcpy(top->tok,tok);
-        top->next = NULL;
-    }
-    else
-    {
-        infonode *temp = (infonode *)malloc(sizeof(infonode));
-        temp->next = top;
-		temp->tok = malloc(strlen(tok)+1);
-		strcpy(temp->tok,tok);
-		temp->loc = currloc;
-        top = temp;
+        infonode *newnode =(infonode *)malloc(sizeof(infonode));
+		if (inf == NULL)
+		{
+			newnode->loc = currloc;
+		}
+		else
+		{
+			newnode->loc = inf->loc;
+		}
+		newnode->tok = malloc(strlen(tok)+1);
+		strcpy(newnode->tok,tok);
+		newnode->next = *top;
+		*top = newnode;
     }
 	printf("in push\n");
-	dispstk();
-	post = upper;
-	upper = NULL;
-	pre = NULL;
+	dispstk(init);
+	dispstk(rec);
+	printf("push end\n\n");
+}
+
+void addinfo(infonode *inf)
+{
+	node *nd = nav(inf->loc);
+	free(nd->type);
+	nd->type = malloc(strlen(inf->tok)+1);
+	strcpy(nd->type,inf->tok);
 }
 
 void record(infonode *inf, char *type)
 {
+	printf("record start\n");
 	free(inf->tok);
 	inf->tok = malloc(strlen(type)+1);
-	strcpy(inf->tok, type);
-	if (upper == NULL)
-	{
-		upper = inf;
-	}
-	if (pre!=NULL)
-	{
-		pre->next = inf;
-		pre = pre->next;
-	}
-	else
-		pre = inf;
-	printf("pretok: %s\n",pre->tok);
-	pre->next = post;
+	strcpy(inf->tok,type);
+	push(&rec, inf, type);
+	printf("record end\n");
 }
 
-void disprecord(void)
-{
-	printf("\ndisprecord\n");
-	infonode *iter;
-	if (upper == NULL)
-	{
-		iter = post;
-	}
-	else 
-		iter = upper;
-		printf("iter is upper\n");
-	while (iter!=NULL)
-	{
-		printf("yay\n");
-		printf("loc: %d, type: %s\n", iter->loc, iter->tok);
-		printf("printed\n");
-		iter = iter->next;
-	}
-}
-
-void addinfo(infonode *inf, char *type)
-{
-	node *temp = nav(inf->loc);
-	free(temp->type);
-	temp->type = malloc(strlen(type)+1);
-	strcpy(temp->type,type);
-}
-
-void pop(char *type)
+void pop(infonode **top, char *type)
 {
     printf("popping: %s\n",type);
-	infonode *top1 = top;
+	infonode *top1;
  
-    if (top1 == NULL)
+    if (top == NULL)
     {
         printf("\n Error : Trying to pop from empty stack");
         return;
     }
     else
-        top1 = top1->next;
-	if (type)
-		record(top, type);
-		disprecord();
-    free(top);
-    top = top1;
-    stackct--;
+	{
+        top1 = *top;
+		if (type)
+			record(*top, type);
+		*top = top1->next;
+		free(top1);
+	}
 }
 
-void dispstk(void)
+void dispstk(infonode *top)
 {
+	printf("\ndispstk:\n");
 	infonode *top1 = top;
  
     if (top1 == NULL)
     {
-        printf("Stack is empty");
+        printf("Stack is empty\n");
         return;
     }
  
@@ -734,6 +703,7 @@ void Node(char *tok, char type[])
 
 int main(int argc, char *argv[])
 {
+	
 	if (argc == 1)
 	{
 		printf("no file given\n");
@@ -760,22 +730,26 @@ int main(int argc, char *argv[])
 	{
 		yyparse();
 	}
-	
-	// node *gt = nav(204);
-	// printf("hey %s\n",gt->tok);
 
 	printf("currlex: %d\n",currlex);
 	
 	if (first != NULL)
 		nextline();
+		
+	infonode *store = rec;
+	while (store)
+	{
+		addinfo(store);
+		store = store->next;
+	}
 	
 	printf("$$$$$$$$$$$\n");
-	//disp(linearr, ln);
+	disp(linearr, ln);
 	printf("$$$$$$$$$$$\n");
 	
 	printf("\n");
-	dispstk();
-	disprecord();
+	dispstk(init);
+	dispstk(rec);
 	
 	fclose(yyin);
 }
