@@ -16,5 +16,5 @@ typedef struct line {
 	struct node *start;
 } line;
 
-void disp(struct line *linearr, int ln);
+void disp(int ln);
 
