@@ -18,4 +18,19 @@ and others similarly.
 
 do not use 0 in enum, which is default for first element but is error for lex
 
-for tesious replacements use regex with find and replace.
+for tedious replacements use regex with find and replace.
+
+Mayank/Parth:
+
+Navigation tracking;
+function variable distinction;
+traversing in a file, shortcuts;
+variable scope;
+
+Soumya:
+
+linking typedefs and other preprocessors;
+annotations;
+
+voice
+
