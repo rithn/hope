@@ -2856,11 +2856,6 @@ int main(int argc, char *argv[])
 		(*(linearr+i)).start = NULL;
 	}
 	
-	for (i = 0; i < 109; i++)
-	{
-		infarr[i] = NULL;
-	}
-	
 	while (!feof(yyin))
 	{
 		yyparse();
@@ -2877,7 +2872,7 @@ int main(int argc, char *argv[])
 	}
 	
 	printf("$$$$$$$$$$$\n");
-	disp(ln);
+	disp(0,ln);
 	printf("$$$$$$$$$$$\n");
 	
 	printf("\n");
@@ -2885,16 +2880,35 @@ int main(int argc, char *argv[])
 	dispstk(rec);
 	disphsh();
 	
-	// printf("%d\n",searchhsh("main"));
-	// printf("%d\n",searchhsh("j"));
+	printf("press w to go up, s to go down and x to exit\n");
+	disp(0,1);
+	int dispcurr = 0;
+	char c;
+	scanf(" %c",&c);
+	while (c != 'x')
+	{
+		switch(c){
+				case 'w': if (dispcurr)
+					dispcurr--;
+				break;
+				case 's' : if (dispcurr < ln-1) 
+					dispcurr++;
+				break;
+			}
+			disp(dispcurr,dispcurr+1);
+		
+		printf("press w to go up, s to go down and x to exit\n");
+		scanf(" %c",&c);
+		
+	}
 	
 	fclose(yyin);
 }
 
-void disp(int ln)
+void disp(int ln1, int ln2)
 {
 	int i;
-	for (i = 0; i<ln; i++)
+	for (i = ln1; i<ln2; i++)
 	{
 		printf("%3d. %d tokens: \n",i,(*(linearr+i)).n);
 		node *read = (*(linearr+i)).start;

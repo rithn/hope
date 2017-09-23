@@ -16,5 +16,5 @@ typedef struct line {
 	struct node *start;
 } line;
 
-void disp(int ln);
+void disp(int ln1, int ln2);
 
