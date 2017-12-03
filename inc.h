@@ -16,5 +16,10 @@ typedef struct line {
 	struct node *start;
 } line;
 
-void disp(int ln1, int ln2);
+typedef struct simplenode {
+	int n;
+	struct simplenode *next;
+} simplenode;
+
+void disp(int ln1, int ln2, int dispwordcurr);
 

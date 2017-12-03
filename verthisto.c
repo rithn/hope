@@ -6,6 +6,7 @@ int main()
 	int copy[26];
 	int c,i;
 	
+	
 	for (i=0;i<26;i++)
 	{
 		letterf[i]=0;

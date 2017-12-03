@@ -1,3 +1,4 @@
+@output(cp.tab.c@)@
 /* A Bison parser, made by GNU Bison 2.7.  */
 
 /* Bison implementation for Yacc-like parsers in C
@@ -63,7 +64,7 @@
 
 /* Copy the first part of user declarations.  */
 /* Line 371 of yacc.c  */
-#line 1 "cp.y"
+#line 1 "cp.c"
 
 #include <stdio.h>
 #include <string.h>
@@ -73,18 +74,15 @@ void yyerror(const char *s);
 int linect(FILE *fopen);
 void nextline(void);
 
-infonode *init = NULL; 
-
 void push(infonode **top, infonode *inf, char *tok);
 void pop(infonode **top, char *type);
 void insert(unsigned long i, char *type, int loc);
-void intpush(simplenode **top, int val);
 
 enum {F = 1, ST, E, ST_ID};
 
 
 /* Line 371 of yacc.c  */
-#line 88 "cp.tab.c"
+#line @oline@ @ofile@
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -103,9 +101,9 @@ enum {F = 1, ST, E, ST_ID};
 #endif
 
 /* In a future release of Bison, this section will be replaced
-   by #include "cp.tab.h".  */
-#ifndef YY_YY_CP_TAB_H_INCLUDED
-# define YY_YY_CP_TAB_H_INCLUDED
+   by #include "@basename(cp.tab.c@)".  */
+#ifndef YY_YY_CP_TAB_C_INCLUDED
+# define YY_YY_CP_TAB_C_INCLUDED
 /* Enabling traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -222,12 +220,12 @@ int yyparse ();
 #endif
 #endif /* ! YYPARSE_PARAM */
 
-#endif /* !YY_YY_CP_TAB_H_INCLUDED  */
+#endif /* !YY_YY_CP_TAB_C_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 231 "cp.tab.c"
+#line @oline@ @ofile@
 
 #ifdef short
 # undef short
@@ -640,34 +638,34 @@ static const yytype_int16 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    42,    42,    43,    44,    45,    46,    50,    51,    52,
-      53,    54,    58,    62,    63,    67,    71,    72,    76,    77,
-      81,    82,    83,    84,    85,    86,    87,    88,    89,    90,
-      94,    95,    99,   100,   101,   102,   103,   104,   105,   109,
-     110,   111,   112,   113,   114,   118,   119,   123,   124,   125,
-     126,   130,   131,   132,   136,   137,   138,   142,   143,   144,
-     145,   146,   150,   151,   152,   156,   157,   161,   162,   166,
-     167,   171,   172,   176,   177,   181,   182,   186,   187,   191,
-     192,   193,   194,   195,   196,   197,   198,   199,   200,   201,
-     205,   206,   210,   214,   215,   216,   220,   221,   222,   223,
-     224,   225,   226,   227,   228,   229,   233,   234,   238,   239,
-     243,   244,   245,   246,   247,   248,   252,   253,   254,   255,
-     256,   257,   258,   259,   260,   261,   262,   263,   264,   265,
-     266,   267,   271,   272,   273,   277,   278,   282,   283,   287,
-     288,   289,   293,   294,   295,   296,   300,   301,   305,   306,
-     307,   311,   312,   313,   314,   315,   319,   320,   324,   325,
-     329,   333,   334,   335,   336,   340,   341,   345,   346,   350,
-     351,   355,   356,   357,   358,   359,   360,   361,   362,   363,
-     364,   365,   366,   367,   368,   372,   373,   374,   375,   379,
-     380,   385,   386,   390,   391,   395,   396,   397,   401,   402,
-     406,   407,   411,   412,   413,   417,   418,   419,   420,   421,
-     422,   423,   424,   425,   426,   427,   428,   429,   430,   431,
-     432,   433,   434,   435,   436,   437,   441,   442,   443,   447,
-     448,   449,   450,   454,   458,   459,   463,   464,   468,   472,
-     473,   474,   475,   476,   477,   481,   482,   483,   487,   488,
-     492,   493,   497,   498,   502,   503,   507,   508,   509,   513,
-     514,   515,   516,   517,   518,   522,   523,   524,   525,   526,
-     530,   531,   535,   536,   540,   541,   545,   546
+       0,    39,    39,    40,    41,    42,    43,    47,    48,    49,
+      50,    51,    55,    59,    60,    64,    68,    69,    73,    74,
+      78,    79,    80,    81,    82,    83,    84,    85,    86,    87,
+      91,    92,    96,    97,    98,    99,   100,   101,   102,   106,
+     107,   108,   109,   110,   111,   115,   116,   120,   121,   122,
+     123,   127,   128,   129,   133,   134,   135,   139,   140,   141,
+     142,   143,   147,   148,   149,   153,   154,   158,   159,   163,
+     164,   168,   169,   173,   174,   178,   179,   183,   184,   188,
+     189,   190,   191,   192,   193,   194,   195,   196,   197,   198,
+     202,   203,   207,   211,   212,   213,   217,   218,   219,   220,
+     221,   222,   223,   224,   225,   226,   230,   231,   235,   236,
+     240,   241,   242,   243,   244,   245,   249,   250,   251,   252,
+     253,   254,   255,   256,   257,   258,   259,   260,   261,   262,
+     263,   264,   268,   269,   270,   274,   275,   279,   280,   284,
+     285,   286,   290,   291,   292,   293,   297,   298,   302,   303,
+     304,   308,   309,   310,   311,   312,   316,   317,   321,   322,
+     326,   330,   331,   332,   333,   337,   338,   342,   343,   347,
+     348,   352,   353,   354,   355,   356,   357,   358,   359,   360,
+     361,   362,   363,   364,   365,   369,   370,   371,   372,   376,
+     377,   382,   383,   387,   388,   392,   393,   394,   398,   399,
+     403,   404,   408,   409,   410,   414,   415,   416,   417,   418,
+     419,   420,   421,   422,   423,   424,   425,   426,   427,   428,
+     429,   430,   431,   432,   433,   434,   438,   439,   440,   444,
+     445,   446,   447,   451,   455,   456,   460,   461,   465,   469,
+     470,   471,   472,   473,   474,   478,   479,   480,   484,   485,
+     489,   490,   494,   495,   499,   500,   504,   505,   506,   510,
+     511,   512,   513,   514,   515,   519,   520,   521,   522,   523,
+     527,   528,   532,   533,   537,   538,   542,   543
 };
 #endif
 
@@ -688,7 +686,7 @@ static const char *const yytname[] =
   "UNION", "ENUM", "ELLIPSIS", "CASE", "DEFAULT", "IF", "ELSE", "SWITCH",
   "WHILE", "DO", "FOR", "GOTO", "CONTINUE", "BREAK", "RETURN", "ALIGNAS",
   "ALIGNOF", "ATOMIC", "GENERIC", "NORETURN", "STATIC_ASSERT",
-  "THREAD_LOCAL", "'('", "')'", "','", "':'", "'['", "']'", "'.'", "'{'",
+  "THREAD_LOCAL", "'('", "')'", "','", "':'", "'@{'", "'@}'", "'.'", "'{'",
   "'}'", "'&'", "'*'", "'+'", "'-'", "'~'", "'!'", "'/'", "'%'", "'<'",
   "'>'", "'^'", "'|'", "'?'", "'='", "';'", "$accept",
   "primary_expression", "constant", "enumeration_constant", "string",
@@ -1721,7 +1719,7 @@ yy_reduce_print (yyvsp, yyrule)
     {
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
-		       &(yyvsp[(yyi + 1) - (yynrhs)])
+		       &(yyvsp@{(yyi + 1) - (yynrhs)@})
 		       		       );
       YYFPRINTF (stderr, "\n");
     }
@@ -2315,97 +2313,97 @@ yyreduce:
     {
         case 2:
 /* Line 1792 of yacc.c  */
-#line 42 "cp.y"
+#line 39 "cp.c"
     {pop(&init, "expression var");}
     break;
 
   case 12:
 /* Line 1792 of yacc.c  */
-#line 58 "cp.y"
+#line 55 "cp.c"
     { pop(&init, "enum declaration");}
     break;
 
   case 24:
 /* Line 1792 of yacc.c  */
-#line 85 "cp.y"
+#line 82 "cp.c"
     { pop(&init, "struct part");}
     break;
 
   case 25:
 /* Line 1792 of yacc.c  */
-#line 86 "cp.y"
+#line 83 "cp.c"
     { pop(&init, "struct part");}
     break;
 
   case 133:
 /* Line 1792 of yacc.c  */
-#line 272 "cp.y"
+#line 269 "cp.c"
     { pop(&init, "struct type");}
     break;
 
   case 134:
 /* Line 1792 of yacc.c  */
-#line 273 "cp.y"
+#line 270 "cp.c"
     { pop(&init, "struct type");}
     break;
 
   case 153:
 /* Line 1792 of yacc.c  */
-#line 313 "cp.y"
+#line 310 "cp.c"
     { pop(&init, "enum type");}
     break;
 
   case 154:
 /* Line 1792 of yacc.c  */
-#line 314 "cp.y"
+#line 311 "cp.c"
     { pop(&init, "enum type");}
     break;
 
   case 155:
 /* Line 1792 of yacc.c  */
-#line 315 "cp.y"
+#line 312 "cp.c"
     { pop(&init, "enum type");}
     break;
 
   case 171:
 /* Line 1792 of yacc.c  */
-#line 355 "cp.y"
+#line 352 "cp.c"
     { pop(&init, "declarator var");}
     break;
 
   case 198:
 /* Line 1792 of yacc.c  */
-#line 401 "cp.y"
+#line 398 "cp.c"
     { ;;}
     break;
 
   case 199:
 /* Line 1792 of yacc.c  */
-#line 402 "cp.y"
+#line 399 "cp.c"
     { }
     break;
 
   case 237:
 /* Line 1792 of yacc.c  */
-#line 464 "cp.y"
+#line 461 "cp.c"
     {  pop(&init, "designator");}
     break;
 
   case 245:
 /* Line 1792 of yacc.c  */
-#line 481 "cp.y"
+#line 478 "cp.c"
     {  pop(&init, "label");}
     break;
 
   case 265:
 /* Line 1792 of yacc.c  */
-#line 522 "cp.y"
+#line 519 "cp.c"
     { pop(&init, "goto label");}
     break;
 
 
 /* Line 1792 of yacc.c  */
-#line 2409 "cp.tab.c"
+#line @oline@ @ofile@
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2637,7 +2635,7 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 549 "cp.y"
+#line 546 "cp.c"
 
 
 FILE *yyin;
@@ -2649,8 +2647,8 @@ node *prev = NULL;
 int ln, currloc = 0, currline = 0;
 
 line *linearr;
-infonode *infarr[1009]; 
-infonode *rec = NULL;
+infonode *infarr@{1009@}; 
+infonode *init = NULL, *rec = NULL;
 
 simplenode *moves = NULL;
 
@@ -2689,6 +2687,7 @@ void push(infonode **top, infonode *inf, char *tok)
 		newnode->next = *top;
 		*top = newnode;
     }
+
 }
 
 void addinfo(infonode *inf)
@@ -2697,9 +2696,6 @@ void addinfo(infonode *inf)
 	free(nd->type);
 	nd->type = malloc(strlen(inf->tok)+1);
 	strcpy(nd->type,inf->tok);
-	printf("loc: %d, n: %d\n", inf->loc, (*(linearr + (inf->loc/100))).n);
-	(*(linearr + (inf->loc/100))).n += 1;
-	printf("loc: %d, n: %d\n", inf->loc, (*(linearr + (inf->loc/100))).n);
 	if (strcmp(nd->type, "declarator var") == 0)
 	{
 		unsigned long h = hash(nd->tok);
@@ -2718,13 +2714,13 @@ void record(infonode *inf, char *type)
 
 void insert(unsigned long i, char *tok, int loc)
 {
-	infonode *inf = infarr[i];
+	infonode *inf = infarr@{i@};
 	infonode *newinf = (infonode *) malloc(sizeof(infonode));
 	newinf->next = inf;
 	newinf->tok = malloc(strlen(tok)+1);
 	strcpy(newinf->tok, tok);
 	newinf->loc = loc;
-	infarr[i] = newinf;
+	infarr@{i@} = newinf;
 }
 
 void disphsh(void)
@@ -2733,7 +2729,7 @@ void disphsh(void)
 	infonode *inf;
 	for (int i = 0; i<1009; i++)
 	{
-		inf = infarr[i];
+		inf = infarr@{i@};
 		while (inf)
 		{
 			printf("hashline: %d, token: %s, line: %d\n", i, inf->tok, inf->loc);
@@ -2745,7 +2741,7 @@ void disphsh(void)
 int searchhsh(char *tok)
 {
 	unsigned long h = hash(tok);
-	infonode *sch = infarr[h];
+	infonode *sch = infarr@{h@};
 	while (sch)
 	{
 		if (strcmp(sch->tok,tok) == 0)
@@ -2806,6 +2802,7 @@ unsigned long hash(unsigned char *str)
 void nextline(void)
 {
 	(*(linearr+currline)).start = first;
+	(*(linearr+currline)).n = currline;
 	first = NULL;
 	last = NULL;
 	prev = NULL;
@@ -2813,7 +2810,7 @@ void nextline(void)
 	currloc = ((currloc/100)+1)*100;
 }
 
-void Node(char *tok, char type[])
+void Node(char *tok, char type@{@})
 {
 	currloc++;
 	node *currnode = (node *) malloc(sizeof(node));
@@ -2838,7 +2835,7 @@ void Node(char *tok, char type[])
 	}
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv@{@})
 {
 	
 	if (argc == 1)
@@ -2846,7 +2843,7 @@ int main(int argc, char *argv[])
 		printf("no file given\n");
 		return 1;
 	}
-	yyin = fopen(argv[1], "r");
+	yyin = fopen(argv@{1@}, "r");
 	ln = linect(yyin);
 	
 	int i;
@@ -2854,12 +2851,12 @@ int main(int argc, char *argv[])
 	linearr = malloc(sizeof(line)*ln);
 	for (i = 0; i<1009; i++)
 	{
-		infarr[i] = NULL; 
+		infarr@{i@} = NULL; 
 	}
 	
 	for (i = 1; i <= ln; i++)
 	{
-		(*(linearr+i)).n = 0;
+		(*(linearr+i)).n = i;
 		(*(linearr+i)).start = NULL;
 	}
 	
@@ -2916,20 +2913,15 @@ int main(int argc, char *argv[])
 					else if (jumploc == displinecurr)
 						printf("First definition in current line\n\n");
 					else {
-						intpush(&moves, displinecurr*100 + dispwordcurr);
+						push(&moves, displinecurr);
 						displinecurr = jumploc;
 						dispwordcurr = 0;
 					}
 				break;
 				case 'b':
-					if (moves == NULL){
-						printf("Reached original position\n");
-						break;
-					}
-					printf("back move: %d\n",moves->n);
-					displinecurr = (moves->n)/100;
-					dispwordcurr = (moves->n)%100;
+					displinecurr = *moves;
 					moves = moves->next;
+					dispwordcurr = 0;
 				break;
 			}
 			disp(displinecurr,displinecurr+1, dispwordcurr);
@@ -2975,11 +2967,11 @@ int linect(FILE *fopen)
 	return count;
 }
 
-void intpush(simplenode **top, int val){
+void push(simplenode **top, int val){
 	if (top != NULL)
     {
         simplenode *newnode =(simplenode *)malloc(sizeof(simplenode));
-		newnode->n = val;
+		newnode->val = val;
 		newnode->next = *top;
 		*top = newnode;
     }
@@ -2989,4 +2981,155 @@ void yyerror(const char *s)
 {
 	fflush(stdout);
 	fprintf(stderr, "*** %s\n", s);
-}
+}@output(cp.tab.c@)@
+/* A Bison parser, made by GNU Bison 2.7.  */
+
+/* Bison interface for Yacc-like parsers in C
+   
+      Copyright (C) 1984, 1989-1990, 2000-2012 Free Software Foundation, Inc.
+   
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
+   
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+
+#ifndef YY_YY_CP_TAB_C_INCLUDED
+# define YY_YY_CP_TAB_C_INCLUDED
+/* Enabling traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
+
+/* Tokens.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+   /* Put the tokens into the symbol table, so that GDB and other debuggers
+      know about them.  */
+   enum yytokentype {
+     IDENTIFIER = 258,
+     I_CONSTANT = 259,
+     F_CONSTANT = 260,
+     STRING_LITERAL = 261,
+     FUNC_NAME = 262,
+     SIZEOF = 263,
+     TRUEVAL = 264,
+     FALSEVAL = 265,
+     PTR_OP = 266,
+     INC_OP = 267,
+     DEC_OP = 268,
+     LEFT_OP = 269,
+     RIGHT_OP = 270,
+     LE_OP = 271,
+     GE_OP = 272,
+     EQ_OP = 273,
+     NE_OP = 274,
+     AND_OP = 275,
+     OR_OP = 276,
+     MUL_ASSIGN = 277,
+     DIV_ASSIGN = 278,
+     MOD_ASSIGN = 279,
+     ADD_ASSIGN = 280,
+     SUB_ASSIGN = 281,
+     LEFT_ASSIGN = 282,
+     RIGHT_ASSIGN = 283,
+     AND_ASSIGN = 284,
+     XOR_ASSIGN = 285,
+     OR_ASSIGN = 286,
+     TYPEDEF_NAME = 287,
+     ENUMERATION_CONSTANT = 288,
+     TYPEDEF = 289,
+     EXTERN = 290,
+     STATIC = 291,
+     AUTO = 292,
+     REGISTER = 293,
+     INLINE = 294,
+     CONST = 295,
+     RESTRICT = 296,
+     VOLATILE = 297,
+     BOOL = 298,
+     CHAR = 299,
+     SHORT = 300,
+     INT = 301,
+     LONG = 302,
+     SIGNED = 303,
+     UNSIGNED = 304,
+     FLOAT = 305,
+     DOUBLE = 306,
+     VOID = 307,
+     COMPLEX = 308,
+     IMAGINARY = 309,
+     STRUCT = 310,
+     UNION = 311,
+     ENUM = 312,
+     ELLIPSIS = 313,
+     CASE = 314,
+     DEFAULT = 315,
+     IF = 316,
+     ELSE = 317,
+     SWITCH = 318,
+     WHILE = 319,
+     DO = 320,
+     FOR = 321,
+     GOTO = 322,
+     CONTINUE = 323,
+     BREAK = 324,
+     RETURN = 325,
+     ALIGNAS = 326,
+     ALIGNOF = 327,
+     ATOMIC = 328,
+     GENERIC = 329,
+     NORETURN = 330,
+     STATIC_ASSERT = 331,
+     THREAD_LOCAL = 332
+   };
+#endif
+
+
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef int YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
+# define yystype YYSTYPE /* obsolescent; will be withdrawn */
+# define YYSTYPE_IS_DECLARED 1
+#endif
+
+extern YYSTYPE yylval;
+
+#ifdef YYPARSE_PARAM
+#if defined __STDC__ || defined __cplusplus
+int yyparse (void *YYPARSE_PARAM);
+#else
+int yyparse ();
+#endif
+#else /* ! YYPARSE_PARAM */
+#if defined __STDC__ || defined __cplusplus
+int yyparse (void);
+#else
+int yyparse ();
+#endif
+#endif /* ! YYPARSE_PARAM */
+
+#endif /* !YY_YY_CP_TAB_C_INCLUDED  */

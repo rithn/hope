@@ -7,11 +7,12 @@ void yyerror(const char *s);
 int linect(FILE *fopen);
 void nextline(void);
 
+infonode *init = NULL; 
+
 void push(infonode **top, infonode *inf, char *tok);
 void pop(infonode **top, char *type);
 void insert(unsigned long i, char *type, int loc);
-
-infonode *init = NULL, *rec = NULL;
+void intpush(simplenode **top, int val);
 
 enum {F = 1, ST, E, ST_ID};
 
@@ -557,6 +558,9 @@ int ln, currloc = 0, currline = 0;
 
 line *linearr;
 infonode *infarr[1009]; 
+infonode *rec = NULL;
+
+simplenode *moves = NULL;
 
 void dispstk(infonode *top);
 unsigned long hash(unsigned char *str);
@@ -586,12 +590,13 @@ void push(infonode **top, infonode *inf, char *tok)
 		{
 			newnode->loc = inf->loc;
 		}
-		newnode->tok = malloc(strlen(tok)+1);
-		strcpy(newnode->tok,tok);
+		if (tok){
+			newnode->tok = malloc(strlen(tok)+1);
+			strcpy(newnode->tok,tok);
+		}
 		newnode->next = *top;
 		*top = newnode;
     }
-
 }
 
 void addinfo(infonode *inf)
@@ -600,6 +605,9 @@ void addinfo(infonode *inf)
 	free(nd->type);
 	nd->type = malloc(strlen(inf->tok)+1);
 	strcpy(nd->type,inf->tok);
+	printf("loc: %d, n: %d\n", inf->loc, (*(linearr + (inf->loc/100))).n);
+	(*(linearr + (inf->loc/100))).n += 1;
+	printf("loc: %d, n: %d\n", inf->loc, (*(linearr + (inf->loc/100))).n);
 	if (strcmp(nd->type, "declarator var") == 0)
 	{
 		unsigned long h = hash(nd->tok);
@@ -706,7 +714,6 @@ unsigned long hash(unsigned char *str)
 void nextline(void)
 {
 	(*(linearr+currline)).start = first;
-	(*(linearr+currline)).n = currline;
 	first = NULL;
 	last = NULL;
 	prev = NULL;
@@ -760,7 +767,7 @@ int main(int argc, char *argv[])
 	
 	for (i = 1; i <= ln; i++)
 	{
-		(*(linearr+i)).n = i;
+		(*(linearr+i)).n = 0;
 		(*(linearr+i)).start = NULL;
 	}
 	
@@ -780,7 +787,7 @@ int main(int argc, char *argv[])
 	}
 	
 	printf("$$$$$$$$$$$\n");
-	disp(0,ln);
+	disp(0,ln, 0);
 	printf("$$$$$$$$$$$\n");
 	
 	printf("\n");
@@ -788,24 +795,54 @@ int main(int argc, char *argv[])
 	dispstk(rec);
 	disphsh();
 	
-	printf("press j to jump to first def, w to go up, s to go down and x to exit\n");
-	disp(0,1);
-	int dispcurr = 0;
+	printf("press j to jump to first def, b to go back, w to go up, s to go down, a to go left, b to go right and x to exit\n");
+	disp(0,1,0);
+	int displinecurr = 0, dispwordcurr = 0; 
 	char c;
+	node *jump;
 	scanf(" %c",&c);
 	while (c != 'x')
 	{
 		switch(c){
-				case 'w': if (dispcurr)
-					dispcurr--;
+				case 'w': if (displinecurr)
+					displinecurr--;
 				break;
-				case 's' : if (dispcurr < ln-1) 
-					dispcurr++;
+				case 's' : if (displinecurr < ln-1) 
+					displinecurr++;
+				break;
+				case 'd' : if (dispwordcurr < (*(linearr+displinecurr)).n - 1)
+					dispwordcurr++;
+				break;
+				case 'a' : if (dispwordcurr > 0)
+					dispwordcurr--;
+				break;
+				case 'j' :
+					jump = nav(displinecurr*100 + dispwordcurr);
+					int jumploc = searchhsh(jump->tok);
+					if (jumploc == -1)
+						printf("No definition found\n\n");
+					else if (jumploc == displinecurr)
+						printf("First definition in current line\n\n");
+					else {
+						intpush(&moves, displinecurr*100 + dispwordcurr);
+						displinecurr = jumploc;
+						dispwordcurr = 0;
+					}
+				break;
+				case 'b':
+					if (moves == NULL){
+						printf("Reached original position\n");
+						break;
+					}
+					printf("back move: %d\n",moves->n);
+					displinecurr = (moves->n)/100;
+					dispwordcurr = (moves->n)%100;
+					moves = moves->next;
 				break;
 			}
-			disp(dispcurr,dispcurr+1);
+			disp(displinecurr,displinecurr+1, dispwordcurr);
 		
-		printf("press j to jump to first def, w to go up, s to go down and x to exit\n");
+		printf("press j to jump to first def, b to go back, w to go up, s to go down, a to go left, b to go right and x to exit\n");
 		scanf(" %c",&c);
 		
 	}
@@ -813,16 +850,18 @@ int main(int argc, char *argv[])
 	fclose(yyin);
 }
 
-void disp(int ln1, int ln2)
+void disp(int ln1, int ln2, int dispwordcurr)
 {
-	int i;
+	int i, ctr;
 	for (i = ln1; i<ln2; i++)
 	{
 		printf("%3d. %d tokens: \n",i,(*(linearr+i)).n);
 		node *read = (*(linearr+i)).start;
+		ctr = 0;
 		for (; read; read = read->next)
 		{
-			printf("%s - %s\n",read->tok, read->type);
+			printf("%s - %s%s\n",read->tok, read->type, (ctr == dispwordcurr)?" *":"");
+			ctr++;
 		}
 		printf("\n\n");
 	}
@@ -842,6 +881,16 @@ int linect(FILE *fopen)
 			count += 1;
 	fseek(fopen, 0, SEEK_SET);
 	return count;
+}
+
+void intpush(simplenode **top, int val){
+	if (top != NULL)
+    {
+        simplenode *newnode =(simplenode *)malloc(sizeof(simplenode));
+		newnode->n = val;
+		newnode->next = *top;
+		*top = newnode;
+    }
 }
 
 void yyerror(const char *s)
