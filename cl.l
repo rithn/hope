@@ -45,7 +45,7 @@ static int check_type(void);
 "/*"                                    { comment(); }
 "#"										{ prep(); }
 "//".*                                    { /* consume //-comment */ }
-
+"#include"   				{ Node("#include","INCLUDE";RETURN(INCLUDE);}
 "auto"					{ Node("auto ","AUTO"); return(AUTO); }
 "bool"					{ Node("bool ", "BOOL"); return(BOOL); }
 "break"					{ Node("break ","BREAK"); return(BREAK); }
