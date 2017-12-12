@@ -27,12 +27,8 @@ extern node *prev;
 
 extern void yyerror(const char *);  /* prints grammar violation message */
 extern int sym_type(const char *);  /* returns type from symbol table */
-extern void *nextline(void);
 
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
-
-extern void Node(char *tok, char type[]);
-extern void push(infonode **top, infonode *inf, char *tok);
 
 extern infonode *init;
 
@@ -45,7 +41,7 @@ static int check_type(void);
 "/*"                                    { comment(); }
 "#"										{ prep(); }
 "//".*                                    { /* consume //-comment */ }
-"#include"   				{ Node("#include","INCLUDE";RETURN(INCLUDE);}
+"#include"   				{ Node("include ","INCLUDE"); return(INCLUDE);}
 "auto"					{ Node("auto ","AUTO"); return(AUTO); }
 "bool"					{ Node("bool ", "BOOL"); return(BOOL); }
 "break"					{ Node("break ","BREAK"); return(BREAK); }
@@ -110,6 +106,7 @@ static int check_type(void);
 {HP}{H}+"."{P}{FS}?			{ Node(yytext,"F_CONSTANT"); return F_CONSTANT; }
 
 ({SP}?\"([^"\\\n]|{ES})*\"{WS}*)+	{Node(yytext,"STRING_LITERAL"); return STRING_LITERAL; }
+"<"[a-zA-Z.]*">"						{Node(yytext,"STD_LIBRARY"); return STD_LIBRARY; }
 
 "..."					{ Node("... ","ELLIPSIS"); return ELLIPSIS; }
 ">>="					{ Node(">>= ","RIGHT_ASSIGN"); return RIGHT_ASSIGN; }

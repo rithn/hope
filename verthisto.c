@@ -7,10 +7,11 @@ int main()
 	int c,i;
 	
 	
-	for (i=0;i<26;i++)
-	{
-		letterf[i]=0;
+	for (i=0;i<26;i++){
+		if (i==1){
+			letterf[i]=0;
 	}
+	
 	
 	while ((c = getchar()) != EOF)
 	{
