@@ -9,14 +9,32 @@ node *prev = NULL;
 int ln, currloc = 0, currline = 0;
 
 line *linearr;
-infonode *infarr[1009]; 
-infonode *rec = NULL;
+locnode *infarr[1009]; 
+locnode *rec = NULL;
 
 simplenode *moves = NULL;
 
-node *nav(int loc)
+//returns number of lines from given file pointer
+int linect(FILE *fopen)
 {
-	int line = loc/100, offset = (loc - line*100);
+	if (fopen == NULL)
+	{
+		printf("Couldn't open file\n");
+		return 0;
+	}
+	int count = 1;
+	char c;
+	for (c = getc(fopen); c != EOF; c = getc(fopen))
+		if (c == '\n')
+			count += 1;
+	fseek(fopen, 0, SEEK_SET);
+	return count;
+}
+
+// returns node which is at a particular location
+node *nav(int detailloc)
+{
+	int line = detailloc/100, offset = (detailloc - line*100);
 	node *going = (*(linearr+line)).start;
 	for (int i = 0; i<offset; i++)
 	{
@@ -25,11 +43,50 @@ node *nav(int loc)
 	return going;
 }
 
-void push(infonode **top, infonode *inf, char *tok)
+// add info of tokens into structure and hashtable
+void addinfo(locnode *inf)
+{
+	node *nd = nav(inf->loc);
+	free(nd->type);
+	nd->type = malloc(strlen(inf->tok)+1);
+	strcpy(nd->type,inf->tok);
+	printf("loc: %d, n: %d\n", inf->loc, (*(linearr + (inf->loc/100))).n);
+	(*(linearr + (inf->loc/100))).n += 1;
+	printf("loc: %d, n: %d\n", inf->loc, (*(linearr + (inf->loc/100))).n);
+	if (strcmp(nd->type, "declarator var") == 0)
+	{
+		unsigned long h = hash(nd->tok);
+		inserthsh(h, nd->tok, (inf->loc)/100);
+	}
+}
+
+// second push- needs to be removed
+void record(locnode *inf, char *type)
+{
+	free(inf->tok);
+	inf->tok = malloc(strlen(type)+1);
+	strcpy(inf->tok,type);
+	push(&rec, inf, type);
+}
+
+//push simple node onto stack
+void intpush(simplenode **top, int val)
 {
 	if (top != NULL)
     {
-        infonode *newnode =(infonode *)malloc(sizeof(infonode));
+        simplenode *newnode =(simplenode *)malloc(sizeof(simplenode));
+		newnode->n = val;
+		newnode->next = *top;
+		*top = newnode;
+    }
+}
+
+// pushes location node 'inf' onto stack of location nodes, replaces text in inf with given string
+void push(locnode **top, locnode *inf, char *tok)
+{
+	if (top != NULL)
+    {
+        locnode *newnode =(locnode *)malloc(sizeof(locnode));
 		if (inf == NULL)
 		{
 			newnode->loc = currloc;
@@ -47,73 +104,10 @@ void push(infonode **top, infonode *inf, char *tok)
     }
 }
 
-void addinfo(infonode *inf)
+//pops location node from given top pointer, also records data in second stack if suitable.
+void pop(locnode **top, char *type)
 {
-	node *nd = nav(inf->loc);
-	free(nd->type);
-	nd->type = malloc(strlen(inf->tok)+1);
-	strcpy(nd->type,inf->tok);
-	printf("loc: %d, n: %d\n", inf->loc, (*(linearr + (inf->loc/100))).n);
-	(*(linearr + (inf->loc/100))).n += 1;
-	printf("loc: %d, n: %d\n", inf->loc, (*(linearr + (inf->loc/100))).n);
-	if (strcmp(nd->type, "declarator var") == 0)
-	{
-		unsigned long h = hash(nd->tok);
-		insert(h, nd->tok, (inf->loc)/100);
-	}
-}
-
-void record(infonode *inf, char *type)
-{
-
-	free(inf->tok);
-	inf->tok = malloc(strlen(type)+1);
-	strcpy(inf->tok,type);
-	push(&rec, inf, type);
-}
-
-void insert(unsigned long i, char *tok, int loc)
-{
-	infonode *inf = infarr[i];
-	infonode *newinf = (infonode *) malloc(sizeof(infonode));
-	newinf->next = inf;
-	newinf->tok = malloc(strlen(tok)+1);
-	strcpy(newinf->tok, tok);
-	newinf->loc = loc;
-	infarr[i] = newinf;
-}
-
-void disphsh(void)
-{
-	printf("\ndisphsh: \n");
-	infonode *inf;
-	for (int i = 0; i<1009; i++)
-	{
-		inf = infarr[i];
-		while (inf)
-		{
-			printf("hashline: %d, token: %s, line: %d\n", i, inf->tok, inf->loc);
-			inf = inf->next;
-		}
-	}
-}
-
-int searchhsh(char *tok)
-{
-	unsigned long h = hash(tok);
-	infonode *sch = infarr[h];
-	while (sch)
-	{
-		if (strcmp(sch->tok,tok) == 0)
-			return sch->loc;
-		sch = sch->next;
-	}
-	return -1;
-}
-
-void pop(infonode **top, char *type)
-{
-	infonode *top1;
+	locnode *top1;
  
     if (top == NULL)
     {
@@ -130,10 +124,11 @@ void pop(infonode **top, char *type)
 	}
 }
 
-void dispstk(infonode *top)
+// displays stack top to bottom
+void dispstk(locnode *top)
 {
 	printf("\ndispstk:\n");
-	infonode *top1 = top;
+	locnode *top1 = top;
  
     if (top1 == NULL)
     {
@@ -148,6 +143,7 @@ void dispstk(infonode *top)
     }
 }
 
+// generates an unsigned long hash in the range 0-1008 from string
 unsigned long hash(unsigned char *str)
 {
     unsigned long hash = 5381;
@@ -159,16 +155,62 @@ unsigned long hash(unsigned char *str)
     return hash%1009;
 }
 
-void nextline(void)
+// displays hashtable line by line word-wise.
+void disphsh(void)
 {
-	(*(linearr+currline)).start = first;
-	first = NULL;
-	last = NULL;
-	prev = NULL;
-	currline += 1;
-	currloc = ((currloc/100)+1)*100;
+	printf("\ndisphsh: \n");
+	locnode *inf;
+	for (int i = 0; i<1009; i++)
+	{
+		inf = infarr[i];
+		while (inf)
+		{
+			printf("hashline: %d, token: %s, line: %d\n", i, inf->tok, inf->loc);
+			inf = inf->next;
+		}
+	}
 }
 
+// returns location of a term in the hashtable (location means line number) if not found returns -1.
+int searchhsh(char *tok)
+{
+	unsigned long h = hash(tok);
+	locnode *sch = infarr[h];
+	while (sch)
+	{
+		if (strcmp(sch->tok,tok) == 0)
+			return sch->loc;
+		sch = sch->next;
+	}
+	return -1;
+}
+
+// insert a location node with given data into hashtable
+void inserthsh(unsigned long i, char *tok, int loc)
+{
+	locnode *inf = infarr[i];
+	locnode *newinf = (locnode *) malloc(sizeof(locnode));
+	newinf->next = inf;
+	newinf->tok = malloc(strlen(tok)+1);
+	strcpy(newinf->tok, tok);
+	newinf->loc = loc;
+	infarr[i] = newinf;
+}
+
+// goes to the next line - used while encoding data initially
+void nextline(void)
+{
+	if (currline < ln-1){
+		(*(linearr+currline)).start = first;
+		first = NULL;
+		last = NULL;
+		prev = NULL;
+		currline += 1;
+		currloc = ((currloc/100)+1)*100;
+	}
+}
+
+// add a new node to structure with token information
 void Node(char *tok, char type[])
 {
 	currloc++;
@@ -194,6 +236,7 @@ void Node(char *tok, char type[])
 	}
 }
 
+// print structure between line nos given(first-inclusive last-exclusive) with some node marked. 
 void disp(int ln1, int ln2, int dispwordcurr)
 {
 	int i, ctr;
@@ -211,29 +254,4 @@ void disp(int ln1, int ln2, int dispwordcurr)
 	}
 }
 
-int linect(FILE *fopen)
-{
-	if (fopen == NULL)
-	{
-		printf("Couldn't open file\n");
-		return 0;
-	}
-	int count = 1;
-	char c;
-	for (c = getc(fopen); c != EOF; c = getc(fopen))
-		if (c == '\n')
-			count += 1;
-	fseek(fopen, 0, SEEK_SET);
-	return count;
-}
 
-void intpush(simplenode **top, int val)
-{
-	if (top != NULL)
-    {
-        simplenode *newnode =(simplenode *)malloc(sizeof(simplenode));
-		newnode->n = val;
-		newnode->next = *top;
-		*top = newnode;
-    }
-}

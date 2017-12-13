@@ -5,32 +5,19 @@ to run file download flex-bison from https://sourceforge.net/projects/winflexbis
 win_flex -d filename allows to debug flex text matching but -d is optional
 win_bison -d filename is necessary to generate cp.tab.h file.
 
-stack functions exist
+To run code on linux machines:
 
-globals-
-first, last, prev: for generating text structure line by line
-currlex - current token location
+cc -c cp.tab.c lex.yy.c inc.c
+cc -o cparse cp.tab.o lex.yy.o inc.o
+./cparse filename
 
-some things about the grammar:
-in the grammar, an expression means not only anything that evaluates to a value but also function calls e.g. printf() etc.
-function definitions can be identified from function definition- declarator- direct declarator- direct declarator () in that order
-and others similarly.
+Targets:
 
-do not use 0 in enum, which is default for first element but is error for lex
+Make code neater - S
+Search through include files - P
+Brackets - S
+Movement through code not simulated - S
 
-for tedious replacements use regex with find and replace.
+Editing
 
-Mayank/Parth:
-
-Navigation tracking;
-function variable distinction;
-traversing in a file, shortcuts;
-variable scope;
-
-Soumya:
-
-linking typedefs and other preprocessors;
-annotations;
-
-voice
-
+Voice

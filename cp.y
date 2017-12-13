@@ -7,10 +7,10 @@ void yyerror(const char *s);
 int linect(FILE *fopen);
 void nextline(void);
 
-infonode *init = NULL; 
+locnode *init = NULL; 
 
-void push(infonode **top, infonode *inf, char *tok);
-void pop(infonode **top, char *type);
+void push(locnode **top, locnode *inf, char *tok);
+void pop(locnode **top, char *type);
 void insert(unsigned long i, char *type, int loc);
 void intpush(simplenode **top, int val);
 
@@ -591,7 +591,7 @@ int main(int argc, char *argv[])
 	if (first != NULL)
 		nextline();
 		
-	infonode *store = rec;
+	locnode *store = rec;
 	while (store)
 	{
 		addinfo(store);
