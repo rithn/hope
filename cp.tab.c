@@ -73,10 +73,10 @@ void yyerror(const char *s);
 int linect(FILE *fopen);
 void nextline(void);
 
-infonode *init = NULL; 
+locnode *init = NULL; 
 
-void push(infonode **top, infonode *inf, char *tok);
-void pop(infonode **top, char *type);
+void push(locnode **top, locnode *inf, char *tok);
+void pop(locnode **top, char *type);
 void insert(unsigned long i, char *type, int loc);
 void intpush(simplenode **top, int val);
 
@@ -2641,31 +2641,37 @@ yyreturn:
 #line 559 "cp.y"
 
 
+// main function
 int main(int argc, char *argv[])
 {
-	
+	// checks if file given
 	if (argc == 1)
 	{
 		printf("no file given\n");
 		return 1;
 	}
+	
+	// opening file
 	yyin = fopen(argv[1], "r");
 	ln = linect(yyin);
 	
 	int i;
 	
-	linearr = malloc(sizeof(line)*ln);
+	// initialising hashtable
 	for (i = 0; i<1009; i++)
 	{
 		infarr[i] = NULL; 
 	}
 	
+	// initialising main structure 
+	linearr = malloc(sizeof(line)*ln);
 	for (i = 1; i <= ln; i++)
 	{
 		(*(linearr+i)).n = 0;
 		(*(linearr+i)).start = NULL;
 	}
 	
+	// parsing the given file
 	while (!feof(yyin))
 	{
 		yyparse();
@@ -2673,8 +2679,9 @@ int main(int argc, char *argv[])
 	
 	if (first != NULL)
 		nextline();
-		
-	infonode *store = rec;
+	
+	// all information of important guys is now in rec, storing it in hashtable and updating structure
+	locnode *store = rec;
 	while (store)
 	{
 		addinfo(store);

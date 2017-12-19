@@ -10,6 +10,7 @@ int main()
 	for (i=0;i<26;i++){
 		if (i==1){
 			letterf[i]=0;
+		}
 	}
 	
 	

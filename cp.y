@@ -558,31 +558,37 @@ declaration_list
 
 %%
 
+// main function
 int main(int argc, char *argv[])
 {
-	
+	// checks if file given
 	if (argc == 1)
 	{
 		printf("no file given\n");
 		return 1;
 	}
+	
+	// opening file
 	yyin = fopen(argv[1], "r");
 	ln = linect(yyin);
 	
 	int i;
 	
-	linearr = malloc(sizeof(line)*ln);
+	// initialising hashtable
 	for (i = 0; i<1009; i++)
 	{
 		infarr[i] = NULL; 
 	}
 	
+	// initialising main structure 
+	linearr = malloc(sizeof(line)*ln);
 	for (i = 1; i <= ln; i++)
 	{
 		(*(linearr+i)).n = 0;
 		(*(linearr+i)).start = NULL;
 	}
 	
+	// parsing the given file
 	while (!feof(yyin))
 	{
 		yyparse();
@@ -590,7 +596,8 @@ int main(int argc, char *argv[])
 	
 	if (first != NULL)
 		nextline();
-		
+	
+	// all information of important guys is now in rec, storing it in hashtable and updating structure
 	locnode *store = rec;
 	while (store)
 	{
@@ -598,6 +605,7 @@ int main(int argc, char *argv[])
 		store = store->next;
 	}
 	
+	// printing for debugging
 	printf("$$$$$$$$$$$\n");
 	disp(0,ln, 0);
 	printf("$$$$$$$$$$$\n");
@@ -607,6 +615,7 @@ int main(int argc, char *argv[])
 	dispstk(rec);
 	disphsh();
 	
+	// interface starts here	
 	printf("press j to jump to first def, b to go back, w to go up, s to go down, a to go left, b to go right and x to exit\n");
 	disp(0,1,0);
 	int displinecurr = 0, dispwordcurr = 0; 

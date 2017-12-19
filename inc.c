@@ -47,12 +47,15 @@ node *nav(int detailloc)
 void addinfo(locnode *inf)
 {
 	node *nd = nav(inf->loc);
-	free(nd->type);
-	nd->type = malloc(strlen(inf->tok)+1);
-	strcpy(nd->type,inf->tok);
-	printf("loc: %d, n: %d\n", inf->loc, (*(linearr + (inf->loc/100))).n);
-	(*(linearr + (inf->loc/100))).n += 1;
-	printf("loc: %d, n: %d\n", inf->loc, (*(linearr + (inf->loc/100))).n);
+	free(nd->type); 
+	if (nd->next != NULL && strcmp(nd->next->type, "'('") == 0) {
+		nd->type = malloc(9);
+		strcpy(nd->type,"function");
+	}
+	else {
+		nd->type = malloc(strlen(inf->tok)+1);
+		strcpy(nd->type,inf->tok);
+	}
 	if (strcmp(nd->type, "declarator var") == 0)
 	{
 		unsigned long h = hash(nd->tok);
@@ -214,6 +217,7 @@ void nextline(void)
 void Node(char *tok, char type[])
 {
 	currloc++;
+	(*(linearr + (currloc/100))).n += 1;
 	node *currnode = (node *) malloc(sizeof(node));
 	currnode->next = NULL;
 	currnode->tok = malloc(strlen(tok)+1);
