@@ -558,117 +558,189 @@ declaration_list
 
 %%
 
-// main function
-int main(int argc, char *argv[])
-{
-	// checks if file given
-	if (argc == 1)
-	{
-		printf("no file given\n");
-		return 1;
-	}
-	
-	// opening file
-	yyin = fopen(argv[1], "r");
-	ln = linect(yyin);
-	
-	int i;
-	
-	// initialising hashtable
-	for (i = 0; i<1009; i++)
-	{
-		infarr[i] = NULL; 
-	}
-	
-	// initialising main structure 
-	linearr = malloc(sizeof(line)*ln);
-	for (i = 1; i <= ln; i++)
-	{
-		(*(linearr+i)).n = 0;
-		(*(linearr+i)).start = NULL;
-	}
-	
-	// parsing the given file
-	while (!feof(yyin))
-	{
-		yyparse();
-	}
-	
-	if (first != NULL)
-		nextline();
-	
-	// all information of important guys is now in rec, storing it in hashtable and updating structure
-	locnode *store = rec;
-	while (store)
-	{
-		addinfo(store);
-		store = store->next;
-	}
-	
-	// printing for debugging
-	printf("$$$$$$$$$$$\n");
-	disp(0,ln, 0);
-	printf("$$$$$$$$$$$\n");
-	
-	printf("\n");
-	dispstk(init);
-	dispstk(rec);
-	disphsh();
-	
-	// interface starts here	
-	printf("press j to jump to first def, b to go back, w to go up, s to go down, a to go left, b to go right and x to exit\n");
-	disp(0,1,0);
-	int displinecurr = 0, dispwordcurr = 0; 
-	char c;
-	node *jump;
-	scanf(" %c",&c);
-	while (c != 'x')
-	{
-		switch(c){
-				case 'w': if (displinecurr)
-					displinecurr--;
-				break;
-				case 's' : if (displinecurr < ln-1) 
-					displinecurr++;
-				break;
-				case 'd' : if (dispwordcurr < (*(linearr+displinecurr)).n - 1)
-					dispwordcurr++;
-				break;
-				case 'a' : if (dispwordcurr > 0)
-					dispwordcurr--;
-				break;
-				case 'j' :
-					jump = nav(displinecurr*100 + dispwordcurr);
-					int jumploc = searchhsh(jump->tok);
-					if (jumploc == -1)
-						printf("No definition found\n\n");
-					else if (jumploc == displinecurr)
-						printf("First definition in current line\n\n");
-					else {
-						intpush(&moves, displinecurr*100 + dispwordcurr);
-						displinecurr = jumploc;
-						dispwordcurr = 0;
-					}
-				break;
-				case 'b':
-					if (moves == NULL){
-						printf("Reached original position\n");
+int main(int argc, char *argv[]){
+	int openFile = 1;
+	int exitProgram = 0;
+	while(exitProgram == 0){
+		if(openFile == 1){	
+			char n;
+			char file[20];
+			int filecount = 0;
+			int currfilecount = 0;
+			filearr = NULL;
+			int start;	
+			while(openFile == 1){
+				printf("Write <n filename> to open a new file, <m> to close current file, <c filename> to checkout a file and x to exit\n");
+				scanf(" %c",&n);
+				switch(n){
+					case 'n': // opening file
+						scanf("%[^\n]%*c", file);
+						files *newfile = (files *) malloc(sizeof(files));
+						newfile->next = filearr;
+						newfile->filePtr = fopen(file, "r");
+						strcpy(newfile->name, file);
+						filearr = newfile;
+						filecount++;
+						yyin = newfile->filePtr;
+						ln = linect(yyin);
+						filearr->lnc = ln;
+						// initialising hashtable
+						int i;
+						for (i = 0; i<1009; i++)
+						{
+							infarr[i] = NULL; 
+						}
+						// initialising main structure 
+						linearr = malloc(sizeof(line)*ln);
+						for (i = 1; i <= ln; i++)
+						{
+							(*(linearr+i)).n = 0;
+							(*(linearr+i)).start = NULL;
+						}
+						//(filearr->infarrc) = infarr;
+
+						memcpy(filearr->infarrc, infarr, sizeof (filearr->infarrc));
+						filearr->linearrc = linearr;
+						// parsing the given file
+						while (!feof(yyin))
+						{
+							yyparse();
+						}
+						if (first != NULL)
+							nextline();
+						
+						// all information of important guys is now in rec, storing it in hashtable and updating structure
+						locnode *store = rec;
+						while (store)
+						{
+							addinfo(store);
+							store = store->next;
+						}
+						
+						// printing for debugging
+						printf("$$$$$$$$$$$\n");
+						disp(0,ln, 0);
+						printf("$$$$$$$$$$$\n");
+						
+						printf("\n");
+						dispstk(init);
+						dispstk(rec);
+						disphsh();
+						openFile = 0;
+					break;
+					case 'm':	// close curent file 
+						fclose(yyin);
+						if(filearr->filePtr == yyin){
+							filearr = filearr->next;
+						}else{
+							for(start = 0;start < filecount;start++){
+								if((filearr+start+1)->filePtr == yyin){
+									(*(filearr+start)).next = (*(filearr+start+2)).next;
+								}
+							}
+						}
+						openFile = 1;
+					break;
+					case 'c':	// navigate to a different file
+						scanf("%[^\n]%*c", file);
+						for(start = 0;start<filecount;start++){
+							if(strcmp((*(filearr + start)).name,file) == 0){
+								yyin = (*(filearr + start)).filePtr;
+								ln = (*(filearr + start)).lnc;
+								//infarr = (*(filearr + start)).infarrc;
+								memcpy(infarr, (*(filearr + start)).infarrc, sizeof infarr);
+								linearr = (*(filearr + start)).linearrc;
+								// parsing the given file
+								while (!feof(yyin))
+								{
+									yyparse();
+								}
+								if (first != NULL)
+									nextline();
+								
+								// all information of important guys is now in rec, storing it in hashtable and updating structure
+								locnode *store = rec;
+								while (store)
+								{
+									addinfo(store);
+									store = store->next;
+								}
+								
+								// printing for debugging
+								printf("$$$$$$$$$$$\n");
+								disp(0,ln, 0);
+								printf("$$$$$$$$$$$\n");
+								
+								printf("\n");
+								dispstk(init);
+								dispstk(rec);
+								disphsh();
+								openFile = 0;
+								break;
+							}
+						}
+					break;
+					case 'x':	// close curent file 
+						exitProgram = 1;
+					break;	 
+				}
+			}
+		}else{	
+			// interface starts here
+			printf("File opened\n");	
+			printf("press j to jump to first def, b to go back, w to go up, s to go down, a to go left, b to go right and x to get to file options\n");
+			disp(0,1,0);
+			int displinecurr = 0, dispwordcurr = 0; 
+			char c;
+			node *jump;
+			scanf(" %c",&c);
+			while (c != 'x')
+			{
+				switch(c){
+						case 'w': if (displinecurr)
+							displinecurr--;
+						break;
+						case 's' : if (displinecurr < ln-1) 
+							displinecurr++;
+						break;
+						case 'd' : if (dispwordcurr < (*(linearr+displinecurr)).n - 1)
+							dispwordcurr++;
+						break;
+						case 'a' : if (dispwordcurr > 0)
+							dispwordcurr--;
+						break;
+						case 'j' :
+							jump = nav(displinecurr*100 + dispwordcurr);
+							int jumploc = searchhsh(jump->tok);
+							if (jumploc == -1)
+								printf("No definition found\n\n");
+							else if (jumploc == displinecurr)
+								printf("First definition in current line\n\n");
+							else {
+								intpush(&moves, displinecurr*100 + dispwordcurr);
+								displinecurr = jumploc;
+								dispwordcurr = 0;
+							}
+						break;
+						case 'b':
+							if (moves == NULL){
+								printf("Reached original position\n");
+								break;
+							}
+							printf("back move: %d\n",moves->n);
+							displinecurr = (moves->n)/100;
+							dispwordcurr = (moves->n)%100;
+							moves = moves->next;
 						break;
 					}
-					printf("back move: %d\n",moves->n);
-					displinecurr = (moves->n)/100;
-					dispwordcurr = (moves->n)%100;
-					moves = moves->next;
-				break;
+					disp(displinecurr,displinecurr+1, dispwordcurr);
+				
+				printf("press j to jump to first def, b to go back, w to go up, s to go down, a to go left, b to go right and x to exit\n");
+				scanf(" %c",&c);	
 			}
-			disp(displinecurr,displinecurr+1, dispwordcurr);
-		
-		printf("press j to jump to first def, b to go back, w to go up, s to go down, a to go left, b to go right and x to exit\n");
-		scanf(" %c",&c);
-		
-	}
-	
-	fclose(yyin);
+			openFile = 1;
+		}
+	}	
 }
 
 void yyerror(const char *s)

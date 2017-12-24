@@ -23,13 +23,23 @@ typedef struct line {
 } line;
 
 //used for simpler things
+typedef struct files {
+	char name[20];
+	FILE *filePtr;
+	int lnc;
+	struct locnode *infarrc[1009];
+	struct line *linearrc;
+	struct files *next;
+} files;
+
+//used for simpler things
 typedef struct simplenode {
 	int n;
 	struct simplenode *next;
 } simplenode;
 
 extern FILE *yyin;
-
+extern files *filearr;		 
 extern node *first, *last, *prev;
 extern int ln, currloc, currline;
 
