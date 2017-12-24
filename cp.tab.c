@@ -2391,21 +2391,28 @@ yyreturn:
 int main(int argc, char *argv[]){
 	int openFile = 1;
 	int exitProgram = 0;
+	int filecount = 0;
+	filearr = NULL;
+					
 	while(exitProgram == 0){
 		if(openFile == 1){	
 			char n;
 			char file[20];
-			int filecount = 0;
-			int currfilecount = 0;
-			filearr = NULL;
+			//int currfilecount = 0;
 			int start;	
+			//n = getchar();
+			//printf("%c\n",&n);
 			while(openFile == 1){
 				printf("Write <n filename> to open a new file, <m> to close current file, <c filename> to checkout a file and x to exit\n");
-				scanf(" %c ",&n);
+				scanf("%c ",&n);
+				//n = getchar();
+				printf("%c character testing\n",n);	// Just to check where character is correct
 				switch(n){
 					case 'n': // opening file
 						//scanf("%[^\n]%*c", file);
 						gets(file);
+						puts(file);printf("File name testing\n");		// Just to check if filename is correct
+						
 						files *newfile = (files *) malloc(sizeof(files));
 						newfile->next = filearr;
 						newfile->filePtr = fopen(file, "r");
@@ -2429,14 +2436,20 @@ int main(int argc, char *argv[]){
 							(*(linearr+i)).start = NULL;
 						}
 						//(filearr->infarrc) = infarr;
-
 						memcpy(filearr->infarrc, infarr, sizeof (filearr->infarrc));
+						
 						filearr->linearrc = linearr;
 						// parsing the given file
+						
+						printf("did i get here 1");
+						
 						while (!feof(yyin))
 						{
 							yyparse();
 						}
+
+						printf("did i get here 2");
+
 						if (first != NULL)
 							nextline();
 						
@@ -2447,7 +2460,6 @@ int main(int argc, char *argv[]){
 							addinfo(store);
 							store = store->next;
 						}
-						
 						// printing for debugging
 						printf("$$$$$$$$$$$\n");
 						disp(0,ln, 0);
@@ -2475,11 +2487,13 @@ int main(int argc, char *argv[]){
 					case 'c':	// navigate to a different file
 						//scanf("%[^\n]%*c", file);
 						gets(file);
+						puts(file);		// file name testing
 						for(start = 0;start<filecount;start++){
+							printf("HI");
 							if(strcmp((*(filearr + start)).name,file) == 0){
+								printf("hihihi");
 								yyin = (*(filearr + start)).filePtr;
 								ln = (*(filearr + start)).lnc;
-								//infarr = (*(filearr + start)).infarrc;
 								memcpy(infarr, (*(filearr + start)).infarrc, sizeof infarr);
 								linearr = (*(filearr + start)).linearrc;
 								// parsing the given file
