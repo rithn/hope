@@ -1,6 +1,7 @@
 #include "inc.h"
 
 FILE *yyin;
+files *filearr;
 
 node *first = NULL;
 node *last = NULL;

@@ -2401,10 +2401,11 @@ int main(int argc, char *argv[]){
 			int start;	
 			while(openFile == 1){
 				printf("Write <n filename> to open a new file, <m> to close current file, <c filename> to checkout a file and x to exit\n");
-				scanf(" %c",&n);
+				scanf(" %c ",&n);
 				switch(n){
 					case 'n': // opening file
-						scanf("%[^\n]%*c", file);
+						//scanf("%[^\n]%*c", file);
+						gets(file);
 						files *newfile = (files *) malloc(sizeof(files));
 						newfile->next = filearr;
 						newfile->filePtr = fopen(file, "r");
@@ -2472,7 +2473,8 @@ int main(int argc, char *argv[]){
 						openFile = 1;
 					break;
 					case 'c':	// navigate to a different file
-						scanf("%[^\n]%*c", file);
+						//scanf("%[^\n]%*c", file);
+						gets(file);
 						for(start = 0;start<filecount;start++){
 							if(strcmp((*(filearr + start)).name,file) == 0){
 								yyin = (*(filearr + start)).filePtr;
@@ -2565,12 +2567,13 @@ int main(int argc, char *argv[]){
 					}
 					disp(displinecurr,displinecurr+1, dispwordcurr);
 				
-				printf("press j to jump to first def, b to go back, w to go up, s to go down, a to go left, b to go right and x to exit\n");
+				printf("press j to jump to first def, b to go back, w to go up, s to go down, a to go left, b to go right and x to get to file options\n");
 				scanf(" %c",&c);	
 			}
 			openFile = 1;
 		}
-	}	
+	}
+	return 0;	
 }
 
 void yyerror(const char *s)
