@@ -106,7 +106,7 @@ static int check_type(void);
 {HP}{H}+"."{P}{FS}?			{ Node(yytext,"F_CONSTANT"); return F_CONSTANT; }
 
 ({SP}?\"([^"\\\n]|{ES})*\"{WS}*)+	{Node(yytext,"STRING_LITERAL"); return STRING_LITERAL; }
-"<"[a-zA-Z.]*">"						{Node(yytext,"STD_LIBRARY"); return STD_LIBRARY; }
+"<"[a-zA-Z.]*">"			{Node(yytext,"STD_LIBRARY"); return STD_LIBRARY; }
 
 "..."					{ Node("... ","ELLIPSIS"); return ELLIPSIS; }
 ">>="					{ Node(">>= ","RIGHT_ASSIGN"); return RIGHT_ASSIGN; }
